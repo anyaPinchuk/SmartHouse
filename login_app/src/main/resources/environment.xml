@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <!-- Initializer -->
+    <entry key="initialize">true</entry>
+    <!-- DataBase Config -->
+    <entry key="db.url">jdbc:mysql://localhost:3306/</entry>
+    <entry key="db.username">root</entry>
+    <entry key="db.password">root</entry>
+    <entry key="db.name">usersDB</entry>
+        <!-- Additional Params for DB-->
+    <entry key="prefixDbParams">db.param.</entry>
+    <entry key="db.param.useSSL">false</entry>
+    <entry key="db.param.characterEncoding">UTF-8</entry>
+    <!-- Hibernate Config-->
+    <entry key="hibernate.enable_lazy_load_no_trans">true</entry>
+    <entry key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</entry>
+    <entry key="hibernate.use_sql_comments">true</entry>
+    <entry key="hibernate.show_sql">false</entry>
+    <entry key="hibernate.format_sql">true</entry>
+    <entry key="hibernate.hbm2ddl.auto">update</entry>
+</properties>
