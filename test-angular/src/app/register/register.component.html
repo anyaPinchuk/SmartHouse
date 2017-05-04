@@ -1,0 +1,32 @@
+<div class="row">
+  <form class="col s4 offset-s4" method="post" [formGroup]="regForm" (ngSubmit)="doReg($event)" action="api/user/reg"
+        #appForm="ngForm">
+
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="email" type="email" name="email" id="email" class="validate border-bottom" required>
+        <label data-error="wrong" data-success="right" for="email">Email</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="password" type="password" name="password" id="password" class="validate border-bottom" required>
+        <label for="password">Password</label>
+      </div>
+    </div>
+    <p class="red-text center">{{errorMsg}}</p>
+    <div class="row">
+      <div class="input-field col s6 push-s6">
+        <input formControlName="role" value="adult" type="radio" id="role" name="role" class="blue" checked>
+        <label for="role" class="indent">Adult</label>
+      </div>
+      <div class="input-field col s6 pull-s4">
+        <input formControlName="role" value="child" type="radio" name="role" id="role1">
+        <label for="role1">Child</label>
+      </div>
+    </div><br>
+    <div class="row">
+      <button class="waves-effect waves-light btn blue col s4 offset-s4" id="regBtn" type="submit">Sign up</button>
+    </div>
+  </form>
+</div>

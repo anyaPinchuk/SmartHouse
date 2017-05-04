@@ -1,0 +1,26 @@
+<div class="row">
+  <form class="col s4 offset-s4" method="post" [formGroup]="deviceForm" action="api/device/add" (ngSubmit)="doAdd($event)" #appForm="ngForm">
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="name" type="text"  name="name" id="name" class="validate border-bottom">
+        <label for="name">Name</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="model" type="text"  name="model" id="model" class="validate border-bottom">
+        <label for="model">Model</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="power" type="number" name="power"  id="power" class="validate border-bottom">
+        <label for="power">Power, W</label>
+      </div>
+    </div>
+    <p class="red-text center">{{errorMsg}}</p>
+    <div class="center">
+      <button class="waves-effect waves-light btn blue" id="loginBtn" type="submit">Add device</button>
+    </div>
+  </form>
+</div>

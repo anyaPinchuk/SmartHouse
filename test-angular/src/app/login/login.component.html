@@ -1,0 +1,21 @@
+<div class="row">
+  <form class="col s4 offset-s4" method="post" [formGroup]="loginForm" action="api/user/login" (ngSubmit)="doLogin($event)"
+        #appForm="ngForm">
+
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="email" type="email" name="email" id="email" class="validate border-bottom" required>
+        <label data-error="wrong" data-success="right" for="email">Email</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="password" type="password" name="password" id="password" class="validate border-bottom" required>
+        <label for="password">Password</label>
+      </div>
+    </div>
+    <div class="col s4 offset-s4">
+      <button class="waves-effect waves-light btn blue" id="loginBtn" type="submit">Log in</button>
+    </div>
+  </form>
+</div>

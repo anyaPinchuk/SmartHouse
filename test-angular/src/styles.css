@@ -1,0 +1,31 @@
+.border-bottom{
+  border-bottom-color: #1aa7ff !important;
+  box-shadow: 0 1px 0 0 #1aa7ff !important;
+}
+
+.form-width{
+  width: 25%;
+}
+
+.margin_bottom{
+  margin-bottom: 5%;
+}
+
+.margin_left{
+  margin-left: 25%;
+}
+
+.switch{
+ margin-top: 5%;
+}
+.row .col{
+  padding: 0 !important;
+}
+.center{
+  display: flex;
+  justify-content: center;
+}
+
+.indent{
+  margin-right: 30px;
+}
