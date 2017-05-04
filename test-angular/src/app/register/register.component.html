@@ -16,13 +16,17 @@
     </div>
     <p class="red-text center">{{errorMsg}}</p>
     <div class="row">
-      <div class="input-field col s6 push-s6">
-        <input formControlName="role" value="adult" type="radio" id="role" name="role" class="blue" checked>
+      <div class="input-field col s4">
+        <input formControlName="role" value="ROLE_ADULT" type="radio" id="role" name="role" class="blue" checked>
         <label for="role" class="indent">Adult</label>
       </div>
-      <div class="input-field col s6 pull-s4">
-        <input formControlName="role" value="child" type="radio" name="role" id="role1">
+      <div class="input-field col s4">
+        <input formControlName="role" value="ROLE_CHILD" type="radio" name="role" id="role1">
         <label for="role1">Child</label>
+      </div>
+      <div class="input-field col s4">
+        <input formControlName="role" value="ROLE_GUEST" type="radio" name="role" id="role2">
+        <label for="role2">Guest</label>
       </div>
     </div><br>
     <div class="row">

@@ -45,7 +45,24 @@ public class UserRESTController {
             if (userService.checkUsernameForExisting(userDTO.getEmail())) {
                 return ResponseEntity.ok("user exists");
             } else {
-                return ResponseEntity.ok(userService.addNewAccount(userDTO, userDTO.getRole()));
+                return ResponseEntity.ok(userService.addNewAccount(userDTO));
+            }
+        } else {
+            LOG.info("bad request {}", bindingResult.getAllErrors());
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
+    }
+
+    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
+    @PostMapping("/add")
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<?> addOwner(@Valid @RequestBody UserDTO userDTO, @RequestParam String houseId, BindingResult bindingResult) {
+        LOG.info("handle post request by url /api/user/add");
+        if (!bindingResult.hasErrors()) {
+            if (userService.checkUsernameForExisting(userDTO.getEmail())) {
+                return ResponseEntity.ok("user exists");
+            } else {
+                return ResponseEntity.ok(userService.addOwner(userDTO, houseId));
             }
         } else {
             LOG.info("bad request {}", bindingResult.getAllErrors());

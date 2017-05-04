@@ -1,33 +1,30 @@
 import {Component, OnInit} from '@angular/core';
-import {Device} from './device';
-import {DeviceService} from '../shared/device.service';
-import {SharedService} from '../shared/shared.service';
+import {HouseService} from '../shared/house.service';
+import {House} from './house';
+import {Router} from '@angular/router';
 import {Http} from '@angular/http';
 import {User} from '../shared/user';
-import {Router} from '@angular/router';
-
+import {SharedService} from '../shared/shared.service';
 
 @Component({
-  selector: 'app-device',
-  templateUrl: './device.component.html',
-  styleUrls: ['./device.component.css']
+  selector: 'app-house',
+  templateUrl: './house.component.html',
+  styleUrls: ['./house.component.css']
 })
-export class DeviceComponent implements OnInit {
+export class HouseComponent implements OnInit {
 
-  devices: Device[] = [];
+  houses: House[];
 
-  constructor(private deviceService: DeviceService, private http: Http, private ss: SharedService,
-              private router: Router,
-              private user: User) {
+  constructor(private houseService: HouseService, private http: Http, private router: Router,
+              private ss: SharedService, private user: User) {
   }
 
   ngOnInit() {
-    this.deviceService.getDevices().subscribe(
-      (data) => this.devices = data.json(),
+    this.houseService.getHouses().subscribe(
+      (data) => this.houses = data.json(),
       (error) => {
         this.router.navigateByUrl('/login');
       });
-    // TODO: logic for disabled devices from child and guest
     this.http.get('api/user/checkRights').subscribe(
       (data) => {
         this.user = data.json();
@@ -73,14 +70,4 @@ export class DeviceComponent implements OnInit {
     );
   }
 
-  turnAction(event, device, stateInput) {
-    device.state = stateInput.checked ? 'on' : 'off';
-
-    this.deviceService.updateDevice(device)
-      .subscribe(
-        (data) => {
-          console.log(data);
-        }
-      );
-  }
 }

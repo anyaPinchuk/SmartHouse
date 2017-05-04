@@ -15,11 +15,11 @@ export class RegisterComponent implements OnInit {
   regForm: FormGroup;
   errorMsg = '';
   ngOnInit() {
-    this.ss.onMainEvent.emit({
-      isOwner: true,
-      isAuthorized: true,
-      isAdmin: false
-    });
+    // this.ss.onMainEvent.emit({
+    //   isOwner: true,
+    //   isAuthorized: true,
+    //   isAdmin: false
+    // });
   }
 
   constructor(public fb: FormBuilder, private http: Http, private router: Router, private ss: SharedService) {

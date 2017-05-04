@@ -43,7 +43,9 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
         Collection<? extends GrantedAuthority> authorities
                 = authentication.getAuthorities();
         for (GrantedAuthority grantedAuthority : authorities) {
-            if (grantedAuthority.getAuthority().equals("ROLE_CHILD") || grantedAuthority.getAuthority().equals("ROLE_ADULT") ) {
+            if (grantedAuthority.getAuthority().equals("ROLE_CHILD") ||
+                    grantedAuthority.getAuthority().equals("ROLE_GUEST") ||
+                    grantedAuthority.getAuthority().equals("ROLE_ADULT")) {
                 isUser = true;
                 break;
             } else if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
@@ -55,7 +57,7 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
         if (isUser) {
             return "/device/all";
         } else {
-            return "/device/all";
+            return "/house/all";
         }
     }
 

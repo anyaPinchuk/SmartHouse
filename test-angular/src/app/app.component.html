@@ -19,6 +19,10 @@
       </li>
       <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/device/all']"><i class="material-icons">settings_power</i></a>
       </li>
+      <li *ngIf="isAdmin"><a class="btn-floating blue" [routerLink]="['/house/add']"><i class="material-icons">add</i></a>
+      </li>
+      <li *ngIf="isAdmin"><a class="btn-floating blue" [routerLink]="['/house/all']"><i class="material-icons">home</i></a>
+      </li>
     </ul>
   </div>
   <router-outlet></router-outlet>

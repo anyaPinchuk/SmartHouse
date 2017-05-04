@@ -15,6 +15,9 @@ import {DeviceService} from './shared/device.service';
 import {SharedService} from './shared/shared.service';
 import {User} from './shared/user';
 import { DeviceAddComponent } from './device-add/device-add.component';
+import { HouseComponent } from './house/house.component';
+import { HouseAddComponent } from './house-add/house-add.component';
+import {HouseService} from './shared/house.service';
 
 
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
@@ -27,6 +30,8 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
     HomeComponent,
     DeviceComponent,
     DeviceAddComponent,
+    HouseComponent,
+    HouseAddComponent,
   ],
   imports: [
     BrowserModule,
@@ -37,7 +42,7 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
     JsonpModule,
     routing,
   ],
-  providers: [DeviceService, SharedService, User],
+  providers: [DeviceService, SharedService, HouseService, User],
   bootstrap: [AppComponent],
 })
 export class AppModule {

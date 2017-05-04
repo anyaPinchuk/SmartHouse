@@ -25,6 +25,19 @@ public class HouseDTO {
     @Email(regexp = "^.+@.+\\.[a-z]{2,4}$")
     private String owner;
 
+
+    public HouseDTO() {
+    }
+
+    public HouseDTO(String country, String city, String street, String house, String flat, String owner) {
+        this.country = country;
+        this.city = city;
+        this.street = street;
+        this.house = house;
+        this.flat = flat;
+        this.owner = owner;
+    }
+
     public Long getId() {
         return id;
     }

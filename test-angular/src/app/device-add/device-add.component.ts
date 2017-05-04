@@ -23,11 +23,11 @@ export class DeviceAddComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.ss.onMainEvent.emit({
-      isOwner: true,
-      isAuthorized: true,
-      isAdmin: false
-    });
+    // this.ss.onMainEvent.emit({
+    //   isOwner: true,
+    //   isAuthorized: true,
+    //   isAdmin: false
+    // });
   }
 
   doAdd(event) {
