@@ -24,7 +24,7 @@ public class DeviceRESTController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("isAuthenticated() and !hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole({'ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST'})")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getAll() {
         LOG.info("handle post request by url /api/device/all");
@@ -32,7 +32,7 @@ public class DeviceRESTController {
     }
 
     @PostMapping("/update")
-    @PreAuthorize("isAuthenticated() and !hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole({'ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST'})")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> update(@RequestBody DeviceDTO deviceDTO, BindingResult bindingResult) {
         LOG.info("handle post request by url /api/device/update");
@@ -46,7 +46,7 @@ public class DeviceRESTController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("isAuthenticated() and hasRole('ROLE_OWNER')")
+    @PreAuthorize("hasRole('ROLE_OWNER')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> add(@RequestBody DeviceDTO deviceDTO, BindingResult bindingResult) {
         LOG.info("handle post request by url /api/device/add");

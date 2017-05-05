@@ -2,7 +2,10 @@ package beans.services;
 
 import beans.converters.UserConverter;
 import entities.House;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.DigestUtils;
 import repository.HouseRepository;
 import repository.UserRepository;
 import dto.UserDTO;
@@ -32,6 +35,7 @@ public class UserService {
         this.converter = converter;
     }
 
+
     protected UserDTO convertToDTO(User owner) {
         if (owner == null) return null;
         return converter.toDTO(owner).orElseThrow(() -> new ServiceException("account wasn't converted"));
@@ -48,8 +52,9 @@ public class UserService {
 
     public UserDTO addNewAccount(UserDTO userDTO) {
         User owner = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = new User(userDTO.getEmail(), userDTO.getPassword());
+        User user = new User(userDTO.getEmail(), DigestUtils.md5DigestAsHex(userDTO.getPassword().getBytes()));
         user.setSmartHouse(owner.getSmartHouse());
+        user.setRole(userDTO.getRole());
         userRepository.save(user);
         return converter.toDTO(user).orElseThrow(() -> new ServiceException("user wasn't converted"));
     }
@@ -58,14 +63,11 @@ public class UserService {
         return username != null && userRepository.findUserByLogin(username) != null;
     }
 
-    public User addOwner(UserDTO userDTO, String houseId) {
+    public User addOwner(UserDTO userDTO, House house) {
         User user = new User(userDTO.getEmail(), userDTO.getPassword());
         user.setRole("ROLE_OWNER");
-        House house = houseRepository.findOne(Long.valueOf(houseId));
         user.setSmartHouse(house);
         userRepository.save(user);
-        house.setOwnerLogin(user.getLogin());
-        houseRepository.save(house);
         return user;
     }
 }

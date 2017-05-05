@@ -22,11 +22,14 @@ export class RegisterComponent implements OnInit {
     // });
   }
 
-  constructor(public fb: FormBuilder, private http: Http, private router: Router, private ss: SharedService) {
+  constructor(public fb: FormBuilder,
+              private http: Http,
+              private router: Router,
+              private ss: SharedService) {
     this.regForm = this.fb.group({
       email: ['', Validators.required],
       password: ['', Validators.required],
-      role: ['adult']
+      role: ['ROLE_ADULT']
 
     });
   }
@@ -39,7 +42,7 @@ export class RegisterComponent implements OnInit {
             if (data.text() === 'user exists') {
               this.errorMsg = 'User with this login already exists';
             } else {
-              this.router.navigateByUrl('/devices/all');
+              this.router.navigateByUrl('/device/all');
             }
           },
               error => console.error('could not post because', error),

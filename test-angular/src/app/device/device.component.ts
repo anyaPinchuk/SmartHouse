@@ -5,6 +5,7 @@ import {SharedService} from '../shared/shared.service';
 import {Http} from '@angular/http';
 import {User} from '../shared/user';
 import {Router} from '@angular/router';
+import {forEach} from "@angular/router/src/utils/collection";
 
 
 @Component({
@@ -16,18 +17,29 @@ export class DeviceComponent implements OnInit {
 
   devices: Device[] = [];
 
-  constructor(private deviceService: DeviceService, private http: Http, private ss: SharedService,
+  constructor(private deviceService: DeviceService,
+              private http: Http,
+              private ss: SharedService,
               private router: Router,
               private user: User) {
   }
 
   ngOnInit() {
     this.deviceService.getDevices().subscribe(
-      (data) => this.devices = data.json(),
+      (data) => {
+        this.devices = data.json();
+        for (let i = 0; i < this.devices.length; i++) {
+          if (this.devices[i].name === 'TV') {
+            this.devices[i].secured = false;
+          } else if (this.devices[i].name.indexOf('Light') >= 0) {
+            this.devices[i].secured = false;
+          }
+        }
+      },
       (error) => {
         this.router.navigateByUrl('/login');
-      });
-    // TODO: logic for disabled devices from child and guest
+      }
+    );
     this.http.get('api/user/checkRights').subscribe(
       (data) => {
         this.user = data.json();
@@ -39,7 +51,9 @@ export class DeviceComponent implements OnInit {
               this.ss.onMainEvent.emit({
                 isOwner: true,
                 isAuthorized: true,
-                isAdmin: false
+                isAdmin: false,
+                isChild: false,
+                isGuest: false
               });
               break;
             }
@@ -47,7 +61,9 @@ export class DeviceComponent implements OnInit {
               this.ss.onMainEvent.emit({
                 isOwner: false,
                 isAuthorized: true,
-                isAdmin: true
+                isAdmin: true,
+                isChild: false,
+                isGuest: false
               });
               break;
             }
@@ -55,7 +71,9 @@ export class DeviceComponent implements OnInit {
               this.ss.onMainEvent.emit({
                 isOwner: false,
                 isAuthorized: true,
-                isAdmin: false
+                isAdmin: false,
+                isChild: true,
+                isGuest: false
               });
               break;
             }
@@ -63,7 +81,9 @@ export class DeviceComponent implements OnInit {
               this.ss.onMainEvent.emit({
                 isOwner: false,
                 isAuthorized: true,
-                isAdmin: false
+                isAdmin: false,
+                isChild: false,
+                isGuest: true
               });
               break;
             }

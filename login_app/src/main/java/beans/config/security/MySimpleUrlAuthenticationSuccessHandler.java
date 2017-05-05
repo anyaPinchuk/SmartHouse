@@ -45,7 +45,8 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
         for (GrantedAuthority grantedAuthority : authorities) {
             if (grantedAuthority.getAuthority().equals("ROLE_CHILD") ||
                     grantedAuthority.getAuthority().equals("ROLE_GUEST") ||
-                    grantedAuthority.getAuthority().equals("ROLE_ADULT")) {
+                    grantedAuthority.getAuthority().equals("ROLE_ADULT") ||
+                    grantedAuthority.getAuthority().equals("ROLE_OWNER")) {
                 isUser = true;
                 break;
             } else if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {

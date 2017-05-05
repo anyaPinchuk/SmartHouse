@@ -1,0 +1,50 @@
+<div class="row">
+  <form class="col s4 offset-s4" method="post" [formGroup]="houseForm" action="api/house/add"
+        (ngSubmit)="doAdd($event)" #appForm="ngForm">
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="country" required type="text" name="country" id="country" class="validate border-bottom">
+        <label for="country">Country</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="city" required type="text" name="city" id="city" class="validate border-bottom">
+        <label for="city">City</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="street" required type="text" name="street" id="street" class="validate border-bottom">
+        <label for="street">Street</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="house" required type="text" name="house" id="house" class="validate border-bottom">
+        <label for="house">House</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="flat" required type="number" name="flat" id="flat" class="validate border-bottom">
+        <label for="flat">Flat</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="ownerLogin" required type="email" name="ownerLogin" id="email" class="validate border-bottom">
+        <label for="email">Email</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input formControlName="password" required type="password" name="password" id="password" class="validate border-bottom">
+        <label for="password">Password</label>
+      </div>
+    </div>
+    <div class="center">
+      <button class="waves-effect waves-light btn blue" type="submit">Add house</button>
+    </div>
+  </form>
+</div>

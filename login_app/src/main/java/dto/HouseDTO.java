@@ -1,5 +1,6 @@
 package dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Email;
 
 import javax.validation.constraints.NotNull;
@@ -23,19 +24,23 @@ public class HouseDTO {
     private String flat;
     @Size(max = 30, min = 4)
     @Email(regexp = "^.+@.+\\.[a-z]{2,4}$")
-    private String owner;
+    private String ownerLogin;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Size(min = 4, max = 32)
+    @NotNull
+    private String password;
 
 
     public HouseDTO() {
     }
 
-    public HouseDTO(String country, String city, String street, String house, String flat, String owner) {
+    public HouseDTO(String country, String city, String street, String house, String flat, String email) {
         this.country = country;
         this.city = city;
         this.street = street;
         this.house = house;
         this.flat = flat;
-        this.owner = owner;
+        this.ownerLogin = email;
     }
 
     public Long getId() {
@@ -86,11 +91,19 @@ public class HouseDTO {
         this.flat = flat;
     }
 
-    public String getOwner() {
-        return owner;
+    public String getOwnerLogin() {
+        return ownerLogin;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public void setOwnerLogin(String ownerLogin) {
+        this.ownerLogin = ownerLogin;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

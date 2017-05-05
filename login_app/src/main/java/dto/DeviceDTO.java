@@ -15,6 +15,7 @@ public class DeviceDTO {
     @NotNull
     @Size(max = 5)
     private String power;
+    private Boolean isSecured = true;
 
     public DeviceDTO() {
     }
@@ -65,5 +66,13 @@ public class DeviceDTO {
 
     public void setPower(String power) {
         this.power = power;
+    }
+
+    public Boolean getSecured() {
+        return isSecured;
+    }
+
+    public void setSecured(Boolean secured) {
+        isSecured = secured;
     }
 }

@@ -32,6 +32,11 @@ public class UserDTO {
         this.email = "";
     }
 
+    public UserDTO(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     public UserDTO(Long id, String login, String password, Date dateOfRegistration, String role) {
         this.id = id;
         this.email = login;

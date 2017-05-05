@@ -27,8 +27,7 @@ public class HouseRESTController {
     public ResponseEntity<?> add(@RequestBody HouseDTO houseDTO, BindingResult bindingResult) {
         LOG.info("handle post request by url /api/house/add");
         if (!bindingResult.hasErrors()) {
-            houseService.addHouse(houseDTO);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(houseService.addHouse(houseDTO));
         } else {
             LOG.info("bad request {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());

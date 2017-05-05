@@ -4,4 +4,5 @@ export class Device  {
   model: string;
   state: string;
   power: string;
+  secured: boolean;
 }

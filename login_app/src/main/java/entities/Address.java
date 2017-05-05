@@ -1,7 +1,8 @@
 package entities;
 
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 public class Address {
@@ -79,8 +80,8 @@ public class Address {
         this.flat = flat;
     }
 
-    @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "id_house", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="id_house")
     public House getSmartHouse() {
         return smartHouse;
     }

@@ -6,6 +6,7 @@ import javax.persistence.*;
 public class House {
     private Long id;
     private String ownerLogin;
+    private Address address;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,5 +25,14 @@ public class House {
 
     public void setOwnerLogin(String ownerLogin) {
         this.ownerLogin = ownerLogin;
+    }
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "smartHouse", cascade = CascadeType.ALL)
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }

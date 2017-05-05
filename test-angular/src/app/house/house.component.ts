@@ -15,8 +15,11 @@ export class HouseComponent implements OnInit {
 
   houses: House[];
 
-  constructor(private houseService: HouseService, private http: Http, private router: Router,
-              private ss: SharedService, private user: User) {
+  constructor(private houseService: HouseService,
+              private http: Http,
+              private router: Router,
+              private ss: SharedService,
+              private user: User) {
   }
 
   ngOnInit() {

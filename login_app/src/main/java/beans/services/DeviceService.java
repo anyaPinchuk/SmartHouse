@@ -75,7 +75,7 @@ public class DeviceService {
     }
 
     private String countConsumedEnergy(Device device) {
-        WorkLog workLog = workLogRepository.findByDeviceIdAndActionOrderByDateOfActionDesc(device.getId(), "on");
+        WorkLog workLog = workLogRepository.findFirstByDeviceIdAndActionOrderByDateOfActionDesc(device.getId(), "on");
         if (workLog != null) {
             long time = workLog.getDateOfAction().getTime();
             long currentTime = System.currentTimeMillis();
@@ -94,7 +94,6 @@ public class DeviceService {
 
     private House getHouse() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = user.getLogin();
-        return houseRepository.findHouseByOwnerLogin(username);
+        return houseRepository.findHouseById(user.getSmartHouse().getId());
     }
 }

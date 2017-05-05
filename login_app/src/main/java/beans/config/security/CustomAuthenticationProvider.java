@@ -1,11 +1,13 @@
 package beans.config.security;
 
 import exception.WrongCredentialsException;
+import javassist.bytecode.ByteArray;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import org.springframework.util.DigestUtils;
 import repository.UserRepository;
 import entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -20,17 +22,17 @@ import java.util.List;
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     private UserRepository userRepository;
-
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
         String email = authentication.getName();
-        String password = (String) authentication.getCredentials();
+        String password = DigestUtils.md5DigestAsHex(((String) authentication.getCredentials()).getBytes());
 
         User user = userRepository.findByLoginAndPassword(email, password);
 

@@ -14,7 +14,10 @@ export class DeviceAddComponent implements OnInit {
   deviceForm: FormGroup;
   errorMsg = '';
 
-  constructor(private router: Router, private http: Http, public fb: FormBuilder, private ss: SharedService) {
+  constructor(private router: Router,
+              private http: Http,
+              public fb: FormBuilder,
+              private ss: SharedService) {
     this.deviceForm = this.fb.group({
       name: ['', Validators.required],
       power: ['', Validators.required],

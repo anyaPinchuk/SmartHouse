@@ -1,11 +1,9 @@
 package beans.services;
 
-import dto.DeviceDTO;
 import dto.HouseDTO;
+import dto.UserDTO;
 import entities.Address;
-import entities.Device;
 import entities.House;
-import exceptions.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,7 @@ import java.util.List;
 public class HouseService {
     private HouseRepository houseRepository;
     private AddressRepository addressRepository;
+    private UserService userService;
     private Logger LOG = LoggerFactory.getLogger(HouseService.class);
 
     @Autowired
@@ -32,18 +31,30 @@ public class HouseService {
         this.addressRepository = addressRepository;
     }
 
-    public void addHouse(HouseDTO houseDTO) {
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    public boolean addHouse(HouseDTO houseDTO) {
         House house = new House();
+        UserDTO userDTO = new UserDTO(houseDTO.getOwnerLogin(), houseDTO.getPassword());
+        if (!userService.checkUsernameForExisting(userDTO.getEmail())) {
+            house.setOwnerLogin(houseDTO.getOwnerLogin());
+        } else return false;
         house = houseRepository.save(house);
-        Address address = new Address(houseDTO.getCountry(), houseDTO.getCity(), houseDTO.getStreet(), houseDTO.getHouse());
-        if (!"".equalsIgnoreCase(houseDTO.getFlat())) {
-            address.setFlat(houseDTO.getFlat());
-        }
         if (house.getId() != null) {
+            userService.addOwner(userDTO, house);
+            Address address = new Address(houseDTO.getCountry(), houseDTO.getCity(), houseDTO.getStreet(), houseDTO.getHouse());
+            if (!"".equalsIgnoreCase(houseDTO.getFlat())) {
+                address.setFlat(houseDTO.getFlat());
+            }
             address.setSmartHouse(house);
             addressRepository.save(address);
+            return true;
         } else {
             LOG.error("house was not saved");
+            return false;
         }
     }
 

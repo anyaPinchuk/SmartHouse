@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;
 
@@ -53,22 +54,6 @@ public class UserRESTController {
         }
     }
 
-    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
-    @PostMapping("/add")
-    @SuppressWarnings("unchecked")
-    public ResponseEntity<?> addOwner(@Valid @RequestBody UserDTO userDTO, @RequestParam String houseId, BindingResult bindingResult) {
-        LOG.info("handle post request by url /api/user/add");
-        if (!bindingResult.hasErrors()) {
-            if (userService.checkUsernameForExisting(userDTO.getEmail())) {
-                return ResponseEntity.ok("user exists");
-            } else {
-                return ResponseEntity.ok(userService.addOwner(userDTO, houseId));
-            }
-        } else {
-            LOG.info("bad request {}", bindingResult.getAllErrors());
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
-    }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/checkRights")
@@ -86,4 +71,9 @@ public class UserRESTController {
         } else return ResponseEntity.ok(new UserDTO());
     }
 
+    @GetMapping("/confirmEmail")
+    public RedirectView confirmEmail(@RequestParam String token) {
+        // check with DB and if it is true then redirect to /reg or something like that
+        return new RedirectView("/login");
+    }
 }
