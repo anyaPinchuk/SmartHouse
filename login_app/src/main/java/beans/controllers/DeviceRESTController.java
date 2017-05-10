@@ -11,6 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/device")
@@ -39,6 +42,28 @@ public class DeviceRESTController {
         if (!bindingResult.hasErrors()) {
             Device device = deviceService.updateDevice(deviceDTO);
             return ResponseEntity.ok(device);
+        } else {
+            LOG.info("bad request {}", bindingResult.getAllErrors());
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
+    }
+
+
+    @GetMapping("/get")
+    public ResponseEntity<?> getByUser(@RequestParam String email) {
+        if (!"".equals(email)) {
+            return ResponseEntity.ok(deviceService.getAllByUser(email));
+        } else return ResponseEntity.ok(new ArrayList<>());
+    }
+
+    @PostMapping("/saveAll")
+    @PreAuthorize("hasRole('ROLE_OWNER')")
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<?> saveAll(@RequestBody List<DeviceDTO> devices, BindingResult bindingResult) {
+        LOG.info("handle post request by url /api/device/saveAll");
+        if (!bindingResult.hasErrors()) {
+            deviceService.updateDevices(devices);
+            return ResponseEntity.ok().build();
         } else {
             LOG.info("bad request {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());

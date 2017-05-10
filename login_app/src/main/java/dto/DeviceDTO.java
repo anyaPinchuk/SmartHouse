@@ -15,7 +15,11 @@ public class DeviceDTO {
     @NotNull
     @Size(max = 5)
     private String power;
-    private Boolean isSecured = true;
+    private Boolean secured = false;
+    private String startTime = "";
+    private String endTime = "";
+    private String hours = "";
+    private String email;
 
     public DeviceDTO() {
     }
@@ -69,10 +73,42 @@ public class DeviceDTO {
     }
 
     public Boolean getSecured() {
-        return isSecured;
+        return secured;
     }
 
     public void setSecured(Boolean secured) {
-        isSecured = secured;
+        this.secured = secured;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getHours() {
+        return hours;
+    }
+
+    public void setHours(String hours) {
+        this.hours = hours;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

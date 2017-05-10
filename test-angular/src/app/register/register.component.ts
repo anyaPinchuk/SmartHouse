@@ -14,12 +14,8 @@ export class RegisterComponent implements OnInit {
 
   regForm: FormGroup;
   errorMsg = '';
+
   ngOnInit() {
-    // this.ss.onMainEvent.emit({
-    //   isOwner: true,
-    //   isAuthorized: true,
-    //   isAdmin: false
-    // });
   }
 
   constructor(public fb: FormBuilder,
@@ -30,12 +26,14 @@ export class RegisterComponent implements OnInit {
       email: ['', Validators.required],
       password: ['', Validators.required],
       role: ['ROLE_ADULT']
-
     });
   }
 
   doReg(event) {
     const form = this.regForm.getRawValue();
+    if (form.role === '') {
+      this.errorMsg = 'Please, choose the user role';
+    } else {
       this.http.post('/api/user/reg', form)
         .subscribe(
           (data) => {
@@ -45,7 +43,8 @@ export class RegisterComponent implements OnInit {
               this.router.navigateByUrl('/device/all');
             }
           },
-              error => console.error('could not post because', error),
-          );
+          error => console.error('could not post because', error),
+        );
+    }
   }
 }

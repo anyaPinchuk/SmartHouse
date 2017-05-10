@@ -21,11 +21,8 @@ public class UserDTO {
     @Size(min = 4, max = 32)
     @NotNull
     private String password;
-
-    @JsonIgnore
     private Date dateOfRegistration;
 
-    @NotNull
     private String role;
 
     public UserDTO() {

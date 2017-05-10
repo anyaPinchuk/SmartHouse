@@ -1,18 +1,18 @@
 package beans.services;
 
-import dto.UserDTO;
 import exceptions.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 
 @Service
 public class MailService {
@@ -31,29 +31,27 @@ public class MailService {
         this.mailSender = mailSender;
     }
 
-    public boolean sendEmail(final UserDTO userDTO, final String confirmationToken) {
-
-        SimpleMailMessage email = getSimpleMailMessage(userDTO, confirmationToken);
+    public boolean sendEmail(final String ownerEmail, final String confirmationToken) {
         try {
+            MimeMessage email = getMimeMessage(ownerEmail, confirmationToken);
             mailSender.send(email);
             return true;
-        } catch (MailException e) {
+        } catch (MailException | MessagingException e) {
             LOG.error(e.getMessage());
             throw new ServiceException(e.getMessage(), e);
         }
     }
 
-    private SimpleMailMessage getSimpleMailMessage(final UserDTO accountDTO, final String confirmationToken) {
-        String recipientAddress = accountDTO.getEmail();
+    private MimeMessage getMimeMessage(final String ownerEmail, final String confirmationToken) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(ownerEmail);
         String subject = "Confirm email from Smart house";
         String confirmationUrl = environment.getProperty("email.confirm.url") + "?token=" + confirmationToken;
-        String message = "";
-
-        SimpleMailMessage email = new SimpleMailMessage();
-        email.setFrom("SmartHouse");
-        email.setTo(recipientAddress);
-        email.setSubject(subject);
-        email.setText(message + " \n " + environment.getProperty("app.host") + confirmationUrl);
-        return email;
+        String msg = "<html><body>To create an account click on link below";
+        helper.setFrom("SmartHouse");
+        helper.setSubject(subject);
+        helper.setText(msg + " \n " + "<a href='" + environment.getProperty("app.host") + confirmationUrl + "'>Here</a></body></html>", true);
+        return message;
     }
 }

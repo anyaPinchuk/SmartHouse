@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Http} from '@angular/http';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {SharedService} from '../shared/shared.service';
 
 @Component({
   selector: 'app-house-add',
@@ -14,7 +15,8 @@ export class HouseAddComponent implements OnInit {
 
   constructor(private router: Router,
               private http: Http,
-              public fb: FormBuilder) {
+              public fb: FormBuilder,
+              private ss: SharedService) {
     this.houseForm = this.fb.group({
       country: ['', Validators.required],
       city: ['', Validators.required],
@@ -22,7 +24,6 @@ export class HouseAddComponent implements OnInit {
       house: ['', Validators.required],
       flat: [''],
       ownerLogin: ['', Validators.required],
-      password: ['', Validators.required],
     });
   }
 
@@ -40,6 +41,7 @@ export class HouseAddComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.ss.onMainEvent.emit(true);
   }
 
 }

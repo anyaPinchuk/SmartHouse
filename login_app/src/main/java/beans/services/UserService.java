@@ -2,11 +2,11 @@ package beans.services;
 
 import beans.converters.UserConverter;
 import entities.House;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import entities.UserEmail;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.DigestUtils;
 import repository.HouseRepository;
+import repository.UserEmailRepository;
 import repository.UserRepository;
 import dto.UserDTO;
 import entities.User;
@@ -14,11 +14,15 @@ import exceptions.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class UserService {
     private UserRepository userRepository;
     private HouseRepository houseRepository;
     private UserConverter converter;
+    private UserEmailRepository emailRepository;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -35,10 +39,14 @@ public class UserService {
         this.converter = converter;
     }
 
+    @Autowired
+    public void setEmailRepository(UserEmailRepository emailRepository) {
+        this.emailRepository = emailRepository;
+    }
 
-    protected UserDTO convertToDTO(User owner) {
+    private UserDTO convertToDTO(User owner) {
         if (owner == null) return null;
-        return converter.toDTO(owner).orElseThrow(() -> new ServiceException("account wasn't converted"));
+        return converter.toDTO(owner).orElseThrow(() -> new ServiceException("user wasn't converted"));
     }
 
     public UserDTO loadUserByUsername(String username) {
@@ -46,7 +54,7 @@ public class UserService {
     }
 
 
-    protected User loadAccountByUsername(String username) {
+    private User loadAccountByUsername(String username) {
         return userRepository.findUserByLogin(username);
     }
 
@@ -56,7 +64,7 @@ public class UserService {
         user.setSmartHouse(owner.getSmartHouse());
         user.setRole(userDTO.getRole());
         userRepository.save(user);
-        return converter.toDTO(user).orElseThrow(() -> new ServiceException("user wasn't converted"));
+        return convertToDTO(user);
     }
 
     public boolean checkUsernameForExisting(String username) {
@@ -69,5 +77,41 @@ public class UserService {
         user.setSmartHouse(house);
         userRepository.save(user);
         return user;
+    }
+
+    public UserDTO createUserFromEmail(UserDTO userDTO) {
+        User user = new User(userDTO.getEmail(), DigestUtils.md5DigestAsHex(userDTO.getPassword().getBytes()));
+        user.setSmartHouse(houseRepository.findHouseByOwnerLogin(userDTO.getEmail()));
+        user.setRole("ROLE_OWNER");
+        userRepository.save(user);
+        return convertToDTO(user);
+    }
+
+    UserEmail saveUserEmail(UserEmail userEmail) {
+        return emailRepository.save(userEmail);
+    }
+
+    public String findEmailByEncodedEmail(String encodedEmail) {
+        return encodedEmail != null ? emailRepository.findByEncodedEmail(encodedEmail).getEmail() : null;
+    }
+
+    public boolean checkEmailForExisting(String encodedEmail) {
+        return encodedEmail != null && emailRepository.findByEncodedEmail(encodedEmail) != null;
+    }
+
+    public List<UserDTO> findUsersByHouse(House house) {
+        List<User> users = userRepository.findAllBySmartHouse(house);
+        List<UserDTO> userDTOS = new ArrayList<>();
+
+        if (users != null) {
+            users.forEach(obj -> {
+                if (!obj.getRole().equalsIgnoreCase("ROLE_OWNER")) {
+                    UserDTO dto = convertToDTO(obj);
+                    dto.setPassword("");
+                    userDTOS.add(dto);
+                }
+            });
+            return userDTOS;
+        } else return new ArrayList<>();
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 
 
 @RestController
@@ -55,10 +56,22 @@ public class UserRESTController {
     }
 
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/checkRights")
+    @PreAuthorize("isAuthenticated() and hasRole('ROLE_OWNER')")
+    @GetMapping("/all")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getAll() {
+        LOG.info("handle post request by url /api/user/all");
+        User user;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!"anonymousUser".equals(auth.getPrincipal())) {
+            user = (User) auth.getPrincipal();
+            return ResponseEntity.ok(userService.findUsersByHouse(user.getSmartHouse()));
+        } else return ResponseEntity.ok(new UserDTO());
+    }
+
+    @GetMapping("/checkRights")
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<?> get() {
         LOG.info("handle post request by url /api/user/checkRights");
         UserDTO userDTO;
         User user;
@@ -72,8 +85,19 @@ public class UserRESTController {
     }
 
     @GetMapping("/confirmEmail")
-    public RedirectView confirmEmail(@RequestParam String token) {
-        // check with DB and if it is true then redirect to /reg or something like that
-        return new RedirectView("/login");
+    public RedirectView confirm(@RequestParam String token) {
+        if (userService.checkEmailForExisting(token))
+            return new RedirectView("/user/new?email=" + userService.findEmailByEncodedEmail(token));
+        else return new RedirectView("/login");
+    }
+
+    @PostMapping("/new")
+    public ResponseEntity<?> createAccount(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+        if (!bindingResult.hasErrors()) {
+            if (!userService.checkUsernameForExisting(userDTO.getEmail())) {
+                return ResponseEntity.ok(userService.createUserFromEmail(userDTO));
+            }
+        }
+        return ResponseEntity.ok(new UserDTO());
     }
 }

@@ -32,7 +32,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", unique = true, nullable = false)
+    @Column(name = "id_user", unique = true, nullable = false)
     public Long getId() {
         return id;
     }
@@ -41,7 +41,7 @@ public class User {
         this.id = id;
     }
 
-    @Column(name = "login")
+    @Column(name = "login", unique = true, nullable = false)
     public String getLogin() {
         return login;
     }
@@ -50,7 +50,7 @@ public class User {
         this.login = login;
     }
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     public String getPassword() {
         return password;
     }
@@ -59,7 +59,7 @@ public class User {
         this.password = password;
     }
 
-    @Column(name = "date_of_registration")
+    @Column(name = "date_of_registration", nullable = false)
     public Date getDateOfRegistration() {
         return dateOfRegistration;
     }
@@ -68,7 +68,7 @@ public class User {
         this.dateOfRegistration = dateOfRegistration;
     }
 
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     public String getRole() {
         return role;
     }

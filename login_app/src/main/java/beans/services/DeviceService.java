@@ -2,18 +2,13 @@ package beans.services;
 
 import beans.converters.DeviceConverter;
 import dto.DeviceDTO;
-import entities.Device;
-import entities.House;
-import entities.User;
-import entities.WorkLog;
+import entities.*;
 import exceptions.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import repository.DeviceRepository;
-import repository.HouseRepository;
-import repository.WorkLogRepository;
+import repository.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -26,7 +21,8 @@ public class DeviceService {
     private HouseRepository houseRepository;
     private WorkLogRepository workLogRepository;
     private DeviceConverter deviceConverter;
-
+    private UserRepository userRepository;
+    private RestrictionRepository restrictionRepository;
 
     @Autowired
     public void setWorkLogRepository(WorkLogRepository workLogRepository) {
@@ -48,17 +44,40 @@ public class DeviceService {
         this.deviceConverter = deviceConverter;
     }
 
-    public List<DeviceDTO> getAll() {
-        List<Device> devices = deviceRepository.findAllBySmartHouse(getHouse());
+    @Autowired
+    public void setRestrictionRepository(RestrictionRepository restrictionRepository) {
+        this.restrictionRepository = restrictionRepository;
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    private List<DeviceDTO> iterateOverDevices(List<Device> devices, User user) {
         List<DeviceDTO> deviceDTOS = new ArrayList<>();
         devices.forEach(obj -> {
-            deviceDTOS.add(deviceConverter.toDTO(obj).orElseThrow(() ->  new ServiceException("device wasn't converted")));
+            DeviceDTO dto = deviceConverter.toDTO(obj).orElseThrow(() -> new ServiceException("device wasn't converted"));
+            Restriction restriction = restrictionRepository.findByDeviceIdAndAndUserId(obj.getId(), user.getId());
+            if (restriction != null) {
+                dto.setStartTime(restriction.getStartTime());
+                dto.setEndTime(restriction.getEndTime());
+                dto.setHours(restriction.getHours());
+                dto.setSecured(restriction.getSecured());
+            }
+            deviceDTOS.add(dto);
         });
         return deviceDTOS;
     }
 
+    public List<DeviceDTO> getAll() {
+        List<Device> devices = deviceRepository.findAllBySmartHouse(getHouse());
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return iterateOverDevices(devices, user);
+    }
+
     public Device updateDevice(DeviceDTO deviceDTO) {
-        Device device = deviceConverter.toEntity(deviceDTO).orElseThrow(() ->  new ServiceException("device wasn't converted"));
+        Device device = deviceConverter.toEntity(deviceDTO).orElseThrow(() -> new ServiceException("device wasn't converted"));
         device = deviceRepository.findOne(device.getId());
         device.setState(deviceDTO.getState());
         deviceRepository.save(device);
@@ -85,8 +104,14 @@ public class DeviceService {
         } else return "0";
     }
 
+    public List<DeviceDTO> getAllByUser(String email) {
+        User user = userRepository.findUserByLogin(email);
+        List<Device> devices = deviceRepository.findAllBySmartHouse(getHouse());
+        return iterateOverDevices(devices, user);
+    }
+
     public Device saveDevice(DeviceDTO deviceDTO) {
-        Device device = deviceConverter.toEntity(deviceDTO).orElseThrow(() ->  new ServiceException("device wasn't converted"));
+        Device device = deviceConverter.toEntity(deviceDTO).orElseThrow(() -> new ServiceException("device wasn't converted"));
         device.setState("off");
         device.setSmartHouse(getHouse());
         return deviceRepository.save(device);
@@ -95,5 +120,22 @@ public class DeviceService {
     private House getHouse() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return houseRepository.findHouseById(user.getSmartHouse().getId());
+    }
+
+    public void updateDevices(List<DeviceDTO> deviceDTOs) {
+        String email = deviceDTOs.get(0).getEmail();
+        User user = userRepository.findUserByLogin(email);
+        deviceDTOs.forEach(deviceDTO -> {
+            Device device = deviceConverter.toEntity(deviceDTO).orElseThrow(() -> new ServiceException("device wasn't converted"));
+            Restriction fromDB = restrictionRepository.findByDeviceIdAndAndUserId(device.getId(), user.getId());
+            if (fromDB != null) {
+                fromDB.setStartTime(deviceDTO.getStartTime());
+                fromDB.setEndTime(deviceDTO.getEndTime());
+                fromDB.setSecured(deviceDTO.getSecured());
+            } else
+                fromDB = new Restriction(deviceDTO.getStartTime(), deviceDTO.getEndTime(),
+                        deviceDTO.getHours(), deviceDTO.getSecured(), user, device);
+            restrictionRepository.save(fromDB);
+        });
     }
 }

@@ -24,11 +24,8 @@ public class HouseDTO {
     private String flat;
     @Size(max = 30, min = 4)
     @Email(regexp = "^.+@.+\\.[a-z]{2,4}$")
-    private String ownerLogin;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Size(min = 4, max = 32)
     @NotNull
-    private String password;
+    private String ownerLogin;
 
 
     public HouseDTO() {
@@ -97,13 +94,5 @@ public class HouseDTO {
 
     public void setOwnerLogin(String ownerLogin) {
         this.ownerLogin = ownerLogin;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

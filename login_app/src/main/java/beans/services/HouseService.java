@@ -4,10 +4,12 @@ import dto.HouseDTO;
 import dto.UserDTO;
 import entities.Address;
 import entities.House;
+import entities.UserEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 import repository.AddressRepository;
 import repository.HouseRepository;
 
@@ -19,6 +21,7 @@ public class HouseService {
     private HouseRepository houseRepository;
     private AddressRepository addressRepository;
     private UserService userService;
+    private MailService mailService;
     private Logger LOG = LoggerFactory.getLogger(HouseService.class);
 
     @Autowired
@@ -32,25 +35,31 @@ public class HouseService {
     }
 
     @Autowired
+    public void setMailService(MailService mailService) {
+        this.mailService = mailService;
+    }
+
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
     public boolean addHouse(HouseDTO houseDTO) {
         House house = new House();
-        UserDTO userDTO = new UserDTO(houseDTO.getOwnerLogin(), houseDTO.getPassword());
-        if (!userService.checkUsernameForExisting(userDTO.getEmail())) {
+        if (!userService.checkUsernameForExisting(houseDTO.getOwnerLogin())) {
             house.setOwnerLogin(houseDTO.getOwnerLogin());
         } else return false;
         house = houseRepository.save(house);
         if (house.getId() != null) {
-            userService.addOwner(userDTO, house);
             Address address = new Address(houseDTO.getCountry(), houseDTO.getCity(), houseDTO.getStreet(), houseDTO.getHouse());
             if (!"".equalsIgnoreCase(houseDTO.getFlat())) {
                 address.setFlat(houseDTO.getFlat());
             }
             address.setSmartHouse(house);
             addressRepository.save(address);
+            mailService.sendEmail(houseDTO.getOwnerLogin(), getTokenFromEmail(houseDTO.getOwnerLogin()));
+            UserEmail userEmail = new UserEmail(houseDTO.getOwnerLogin(), getTokenFromEmail(houseDTO.getOwnerLogin()));
+            userService.saveUserEmail(userEmail);
             return true;
         } else {
             LOG.error("house was not saved");
@@ -68,5 +77,9 @@ public class HouseService {
             houseDTOS.add(dto);
         });
         return houseDTOS;
+    }
+
+    public String getTokenFromEmail(String email){
+        return DigestUtils.md5DigestAsHex(email.getBytes());
     }
 }

@@ -18,6 +18,8 @@ import { DeviceAddComponent } from './device-add/device-add.component';
 import { HouseComponent } from './house/house.component';
 import { HouseAddComponent } from './house-add/house-add.component';
 import {HouseService} from './shared/house.service';
+import { NewAccountComponent } from './new-account/new-account.component';
+import { DeviceManageComponent } from './device-manage/device-manage.component';
 
 
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
@@ -32,6 +34,8 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
     DeviceAddComponent,
     HouseComponent,
     HouseAddComponent,
+    NewAccountComponent,
+    DeviceManageComponent,
   ],
   imports: [
     BrowserModule,

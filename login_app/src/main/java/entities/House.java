@@ -19,6 +19,7 @@ public class House {
         this.id = id;
     }
 
+    @Column(name = "owner_login", nullable = false)
     public String getOwnerLogin() {
         return ownerLogin;
     }

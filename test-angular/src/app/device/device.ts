@@ -5,4 +5,8 @@ export class Device  {
   state: string;
   power: string;
   secured: boolean;
+  startTime: string;
+  endTime: string;
+  hours: string;
+  email = '';
 }

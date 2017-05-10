@@ -8,7 +8,7 @@
   </div>
 </nav>
 <div class="container">
-  <div class="fixed-action-btn horizontal click-to-toggle">
+  <div  *ngIf="isAuthorized" class="fixed-action-btn horizontal click-to-toggle">
     <a class="btn-floating btn-large blue">
       <i class="material-icons">menu</i>
     </a>
@@ -16,6 +16,8 @@
       <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/reg']"><i
         class="material-icons">perm_identity</i></a></li>
       <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/device/add']"><i class="material-icons">add</i></a>
+      </li>
+      <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/device/manage']"><i class="material-icons">perm_data_setting</i></a>
       </li>
       <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/device/all']"><i class="material-icons">settings_power</i></a>
       </li>

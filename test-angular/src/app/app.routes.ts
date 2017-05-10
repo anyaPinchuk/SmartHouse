@@ -5,8 +5,10 @@ import {RegisterComponent} from './register/register.component';
 import {HomeComponent} from './home/home.component';
 import {DeviceComponent} from './device/device.component';
 import {DeviceAddComponent} from './device-add/device-add.component';
-import {HouseComponent} from "./house/house.component";
-import {HouseAddComponent} from "./house-add/house-add.component";
+import {HouseComponent} from './house/house.component';
+import {HouseAddComponent} from './house-add/house-add.component';
+import {NewAccountComponent} from './new-account/new-account.component';
+import {DeviceManageComponent} from './device-manage/device-manage.component';
 
 // Route Configuration
 export const routes: Routes = [
@@ -32,6 +34,10 @@ export const routes: Routes = [
     component: DeviceComponent
   },
   {
+    path: 'device/manage',
+    component: DeviceManageComponent
+  },
+  {
     path: 'device/add',
     component: DeviceAddComponent
   },
@@ -42,6 +48,10 @@ export const routes: Routes = [
   {
     path: 'house/add',
     component: HouseAddComponent
+  },
+  {
+    path: 'user/new',
+    component: NewAccountComponent
   }
 ];
 

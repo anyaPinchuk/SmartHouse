@@ -26,25 +26,25 @@ export class DeviceAddComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.ss.onMainEvent.emit({
-    //   isOwner: true,
-    //   isAuthorized: true,
-    //   isAdmin: false
-    // });
+    this.ss.onMainEvent.emit(true);
   }
 
   doAdd(event) {
     const form = this.deviceForm.getRawValue();
-    this.http.post('/api/device/add', form)
-      .subscribe(
-        (data) => {
-          this.router.navigateByUrl('/device/all');
-        },
-        (error) => {
-          console.error('could not post because', error);
-          this.errorMsg = 'The fields are incorrect';
-        }
-      );
+    if (form.name !== '' && form.power !== '') {
+      this.http.post('/api/device/add', form)
+        .subscribe(
+          (data) => {
+            this.router.navigateByUrl('/device/all');
+          },
+          (error) => {
+            console.error('could not post because', error);
+            this.errorMsg = 'The fields are incorrect';
+          }
+        );
+    } else {
+      this.errorMsg = 'Wrong name or power value!';
+    }
   }
 
 }

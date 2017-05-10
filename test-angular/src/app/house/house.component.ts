@@ -24,53 +24,13 @@ export class HouseComponent implements OnInit {
 
   ngOnInit() {
     this.houseService.getHouses().subscribe(
-      (data) => this.houses = data.json(),
+      (data) => {
+        this.houses = data.json();
+        this.ss.onMainEvent.emit(true);
+      },
       (error) => {
         this.router.navigateByUrl('/login');
       });
-    this.http.get('api/user/checkRights').subscribe(
-      (data) => {
-        this.user = data.json();
-        if (this.user.email === '') {
-          this.router.navigateByUrl('/login');
-        } else {
-          switch (this.user.role) {
-            case 'ROLE_OWNER': {
-              this.ss.onMainEvent.emit({
-                isOwner: true,
-                isAuthorized: true,
-                isAdmin: false
-              });
-              break;
-            }
-            case 'ROLE_ADMIN': {
-              this.ss.onMainEvent.emit({
-                isOwner: false,
-                isAuthorized: true,
-                isAdmin: true
-              });
-              break;
-            }
-            case 'ROLE_CHILD': {
-              this.ss.onMainEvent.emit({
-                isOwner: false,
-                isAuthorized: true,
-                isAdmin: false
-              });
-              break;
-            }
-            case 'ROLE_GUEST': {
-              this.ss.onMainEvent.emit({
-                isOwner: false,
-                isAuthorized: true,
-                isAdmin: false
-              });
-              break;
-            }
-          }
-        }
-      }
-    );
   }
 
 }
