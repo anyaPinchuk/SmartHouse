@@ -7,13 +7,15 @@ public class UserEmail {
     private Long id;
     private String email;
     private String encodedEmail;
+    private Long expireDate;
 
     public UserEmail() {
     }
 
-    public UserEmail(String email, String encodedEmail) {
+    public UserEmail(String email, String encodedEmail, Long expireDate) {
         this.email = email;
         this.encodedEmail = encodedEmail;
+        this.expireDate = expireDate;
     }
 
     @Id
@@ -43,5 +45,14 @@ public class UserEmail {
 
     public void setEncodedEmail(String encodedEmail) {
         this.encodedEmail = encodedEmail;
+    }
+
+    @Column(name = "expire_date", nullable = false)
+    public Long getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(Long expireDate) {
+        this.expireDate = expireDate;
     }
 }

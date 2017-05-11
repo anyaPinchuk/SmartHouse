@@ -85,8 +85,8 @@ public class UserRESTController {
     }
 
     @GetMapping("/confirmEmail")
-    public RedirectView confirm(@RequestParam String token) {
-        if (userService.checkEmailForExisting(token))
+    public RedirectView confirm(@RequestParam String token, @RequestParam Long expire) {
+        if (userService.checkEmailForExisting(token, expire))
             return new RedirectView("/user/new?email=" + userService.findEmailByEncodedEmail(token));
         else return new RedirectView("/login");
     }

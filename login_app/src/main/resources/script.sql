@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS `usersdb`.`user_email` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(255) UNIQUE NOT NULL,
   `encoded_email` VARCHAR(255) UNIQUE NOT NULL,
+  `expire_date` BIGINT(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `UK_qm35y897bny0qjqutviap50yi` (`email` ASC))
   ENGINE = InnoDB

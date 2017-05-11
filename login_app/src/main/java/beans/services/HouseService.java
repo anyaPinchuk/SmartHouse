@@ -57,8 +57,9 @@ public class HouseService {
             }
             address.setSmartHouse(house);
             addressRepository.save(address);
-            mailService.sendEmail(houseDTO.getOwnerLogin(), getTokenFromEmail(houseDTO.getOwnerLogin()));
-            UserEmail userEmail = new UserEmail(houseDTO.getOwnerLogin(), getTokenFromEmail(houseDTO.getOwnerLogin()));
+            Long expireDate = System.currentTimeMillis() + 1209600000;
+            mailService.sendEmail(houseDTO.getOwnerLogin(), getTokenFromEmail(houseDTO.getOwnerLogin()), expireDate);
+            UserEmail userEmail = new UserEmail(houseDTO.getOwnerLogin(), getTokenFromEmail(houseDTO.getOwnerLogin()), expireDate);
             userService.saveUserEmail(userEmail);
             return true;
         } else {
@@ -79,7 +80,7 @@ public class HouseService {
         return houseDTOS;
     }
 
-    public String getTokenFromEmail(String email){
+    public String getTokenFromEmail(String email) {
         return DigestUtils.md5DigestAsHex(email.getBytes());
     }
 }

@@ -95,8 +95,13 @@ public class UserService {
         return encodedEmail != null ? emailRepository.findByEncodedEmail(encodedEmail).getEmail() : null;
     }
 
-    public boolean checkEmailForExisting(String encodedEmail) {
-        return encodedEmail != null && emailRepository.findByEncodedEmail(encodedEmail) != null;
+    public boolean checkEmailForExisting(String encodedEmail, Long expire) {
+        if (encodedEmail == null) return false;
+        UserEmail userEmail = emailRepository.findByEncodedEmail(encodedEmail);
+        if (userEmail != null) {
+            Long currentTime = System.currentTimeMillis();
+            return expire.equals(userEmail.getExpireDate()) && currentTime >= userEmail.getExpireDate();
+        } else return false;
     }
 
     public List<UserDTO> findUsersByHouse(House house) {
