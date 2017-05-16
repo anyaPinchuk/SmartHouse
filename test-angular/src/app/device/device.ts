@@ -9,4 +9,5 @@ export class Device  {
   endTime: string;
   hours: string;
   email = '';
+  energy: string;
 }

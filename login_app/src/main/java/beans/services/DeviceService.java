@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import repository.*;
 
 import java.security.Principal;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -143,7 +144,7 @@ public class DeviceService {
             } else
                 fromDB = new Restriction(deviceDTO.getStartTime(), deviceDTO.getEndTime(),
                         deviceDTO.getHours(), deviceDTO.getSecured(), user, device);
-            if(deviceDTO.getSecured()){
+            if (deviceDTO.getSecured()) {
 
                 saveDevice(deviceDTO);
             }
@@ -160,5 +161,23 @@ public class DeviceService {
     public List<DeviceDTO> getAll(User user) {
         List<Device> devices = deviceRepository.findAllBySmartHouse(user.getSmartHouse());
         return iterateOverDevices(devices, user);
+    }
+
+    public List<DeviceDTO> getByDateInterval(Timestamp startDate, Timestamp endDate) {
+        House house = getHouse();
+        List<Device> devices = deviceRepository.findAllBySmartHouse(house);
+        List<DeviceDTO> deviceDTOS = new ArrayList<>();
+        devices.forEach(device -> {
+            List<WorkLog> logs = workLogRepository.findAllByDateOfActionIsBetweenAndActionAndDevice(
+                    startDate, endDate, "off", device);
+            DeviceDTO dto = deviceConverter.toDTO(device).orElseThrow(() -> new ServiceException("device wasn't converted"));
+            logs.forEach(log -> {
+                Long result = Long.valueOf(log.getConsumedEnergy());
+                result += Long.valueOf(dto.getEnergy());
+                dto.setEnergy(String.valueOf(result));
+            });
+            deviceDTOS.add(dto);
+        });
+        return deviceDTOS;
     }
 }

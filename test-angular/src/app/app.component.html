@@ -13,6 +13,8 @@
       <i class="material-icons">menu</i>
     </a>
     <ul>
+      <li *ngIf="isAuthorized"><a class="btn-floating blue" [routerLink]="['/device/charts']"><i class="material-icons">insert_chart</i></a>
+      </li>
       <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/reg']"><i
         class="material-icons">perm_identity</i></a></li>
       <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/device/add']"><i class="material-icons">add</i></a>

@@ -69,6 +69,10 @@ export class DeviceService {
     this.stompClient.send(url, {}, msg);
     return this.stompClient;
   }
+
+  getDevicesByDateInterval(start, end): any {
+    return this.http.get('/api/device/getByDate?startDate=' + start + '&endDate=' + end);
+  }
 }
 
 

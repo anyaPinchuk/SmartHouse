@@ -21,6 +21,7 @@ public class DeviceDTO implements Serializable {
     private String endTime = "";
     private String hours = "";
     private String email;
+    private String energy = "0";
 
     public DeviceDTO() {
     }
@@ -111,5 +112,13 @@ public class DeviceDTO implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getEnergy() {
+        return energy;
+    }
+
+    public void setEnergy(String energy) {
+        this.energy = energy;
     }
 }

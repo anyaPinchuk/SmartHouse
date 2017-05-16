@@ -9,6 +9,8 @@ import {HouseComponent} from './house/house.component';
 import {HouseAddComponent} from './house-add/house-add.component';
 import {NewAccountComponent} from './new-account/new-account.component';
 import {DeviceManageComponent} from './device-manage/device-manage.component';
+import {ChartComponent} from './chart/chart.component';
+
 
 // Route Configuration
 export const routes: Routes = [
@@ -52,6 +54,10 @@ export const routes: Routes = [
   {
     path: 'user/new',
     component: NewAccountComponent
+  },
+  {
+    path: 'device/charts',
+    component: ChartComponent
   }
 ];
 

@@ -28,7 +28,8 @@
         "../node_modules/materialize-css/dist/js/materialize.min.js",
         "assets/resources/js/script.js",
         "assets/resources/js/stomp.js",
-        "assets/resources/js/sockjs-0.3.4.js"
+        "assets/resources/js/sockjs-0.3.4.js",
+        "../node_modules/highcharts/highcharts.js"
       ],
       "environments": {
         "source": "environments/environment.ts",

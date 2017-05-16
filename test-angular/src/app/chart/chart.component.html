@@ -1,3 +1,7 @@
-<p>
-  chart works!
-</p>
+<div class="row">
+  <label>Start date </label><input type="date" class="datepicker" id="datepicker1">
+  <label>End date</label><input type="date" class="datepicker" id="datepicker2">
+  <button class="btn" (click)="buildCharts($event)">Show</button>
+  <div style="width:60%" id="pie1"></div>
+  <div style="width:60%" id="pie2"></div>
+</div>

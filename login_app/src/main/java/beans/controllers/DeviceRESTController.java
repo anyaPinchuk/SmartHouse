@@ -9,6 +9,7 @@ import entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,6 +74,17 @@ public class DeviceRESTController {
         }
     }
 
+    @GetMapping("/getByDate")
+    @PreAuthorize("hasAnyRole({'ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST'})")
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<?> getByDate(@RequestParam String startDate,
+                                       @RequestParam String endDate) throws ParseException {
+        LOG.info("handle post request by url /api/device/getByDate");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Timestamp start = new Timestamp(format.parse(startDate).getTime());
+        Timestamp end = new Timestamp(format.parse(endDate).getTime());
+        return ResponseEntity.ok(deviceService.getByDateInterval(start, end));
+    }
 
     @GetMapping("/get")
     public ResponseEntity<?> getByUser(@RequestParam String email) {
@@ -85,7 +102,7 @@ public class DeviceRESTController {
         User user = userService.loadAccountByUsername(email);
         if (!bindingResult.hasErrors()) {
             deviceService.updateDevices(devices);
-            messagingTemplate.convertAndSendToUser(user.getSessionID(),"/queue/updateDevices", deviceService.getAll(user));
+            messagingTemplate.convertAndSendToUser(user.getSessionID(), "/queue/updateDevices", deviceService.getAll(user));
             return ResponseEntity.ok().build();
         } else {
             LOG.info("bad request {}", bindingResult.getAllErrors());
