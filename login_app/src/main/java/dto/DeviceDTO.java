@@ -2,8 +2,9 @@ package dto;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
-public class DeviceDTO {
+public class DeviceDTO implements Serializable {
     private Long id;
     @NotNull
     @Size(max = 30, min = 4)

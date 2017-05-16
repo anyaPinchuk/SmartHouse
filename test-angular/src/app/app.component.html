@@ -8,7 +8,7 @@
   </div>
 </nav>
 <div class="container">
-  <div  *ngIf="isAuthorized" class="fixed-action-btn horizontal click-to-toggle">
+  <div  *ngIf="isAuthorized && isOwner" class="fixed-action-btn horizontal click-to-toggle">
     <a class="btn-floating btn-large blue">
       <i class="material-icons">menu</i>
     </a>

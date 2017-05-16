@@ -1,1 +1,2 @@
-/// <reference path="globals/jquery/index.d.ts" />
+declare module 'sockjs-client';
+declare module 'stompjs';

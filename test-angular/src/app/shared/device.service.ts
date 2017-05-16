@@ -1,10 +1,20 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {Device} from '../device/device';
+import {SharedService} from '../shared/shared.service';
+import {User} from './user';
+declare const SockJS;
+declare const Stomp;
 
 @Injectable()
 export class DeviceService {
-  constructor(private http: Http) {
+  private url = 'http://localhost:8080/';
+  public stompClient: any;
+  private sendUrl = '/api/devices';
+
+  constructor(private http: Http,
+              private user: User,
+              private ss: SharedService) {
   }
 
   getDevices(): any {
@@ -24,7 +34,45 @@ export class DeviceService {
   }
 
   saveDevices(devices: Device[]) {
-    console.log(JSON.stringify(devices));
     return this.http.post('api/device/saveAll', devices);
   }
+
+  connect() {
+    const that = this;
+    const socket = new SockJS(this.url);
+    this.stompClient = Stomp.over(socket);
+    this.stompClient.connect({}, function (frame) {
+      that.stompClient.subscribe('/api/connect');
+      that.stompClient.subscribe('/user/queue/updateDevices', function (devices) {
+        that.ss.onMainEvent.emit(JSON.parse(devices.body));
+      });
+      that.stompClient.subscribe('/topic/devices', function (devices) {
+        that.ss.onMainEvent.emit(JSON.parse(devices.body));
+      });
+      that.stompClient.subscribe('/user/queue/getNotify', function (msg) {
+        notify(JSON.parse(msg.body));
+      });
+    }, function (err) {
+      console.log('err', err);
+    });
+
+  }
+
+
+  onConnect() {
+    this.stompClient.subscribe('/api/connect', function (id) {
+      this.user.sessionID = id.body;
+    });
+  }
+
+  send(msg, url): any {
+    this.stompClient.send(url, {}, msg);
+    return this.stompClient;
+  }
+}
+
+
+function notify(device) {
+  const email = device.email;
+  Materialize.toast('User ' + email + ' turned ' + device.state + ' ' + device.name, 4000);
 }

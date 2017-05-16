@@ -5,7 +5,7 @@ import {Http} from '@angular/http';
 export class User {
    email: string;
    role: string;
-
+   sessionID: string;
 
   getRole(): string {
     return this.role;

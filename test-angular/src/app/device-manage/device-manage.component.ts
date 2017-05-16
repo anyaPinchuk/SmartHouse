@@ -4,6 +4,7 @@ import {DeviceService} from '../shared/device.service';
 import {SharedService} from '../shared/shared.service';
 import {Router} from '@angular/router';
 
+
 @Component({
   selector: 'app-device-manage',
   templateUrl: './device-manage.component.html',
@@ -22,15 +23,12 @@ export class DeviceManageComponent implements OnInit {
   }
 
   ngOnInit() {
-    $(document).ready(function(){
+    $(document).ready(function () {
       $('.modal').modal();
     });
     this.deviceService.getUsers().subscribe((data) => {
       this.users = data.json();
       this.selectedUser = this.users[0];
-      this.users.forEach(obj => {
-        obj.role = obj.role.substring(5);
-      });
       this.ss.onMainEvent.emit(true);
     }, (error) => {
       this.router.navigateByUrl('/login');
@@ -46,11 +44,13 @@ export class DeviceManageComponent implements OnInit {
   }
 
   changeDevice(id) {
+    console.log(id);
     this.devices.forEach(device => {
-      if (device.id === id) {
+      if (id === String(device.id)) {
         this.selectedDevice = device;
       }
     });
+    console.log(this.selectedDevice);
   }
 
   changeInput(name, input) {
@@ -84,17 +84,30 @@ export class DeviceManageComponent implements OnInit {
         break;
       }
     }
-    this.devices.forEach(device => {
-      if (device.id === this.selectedDevice.id) {
-        device = this.selectedDevice;
+    if (this.selectedDevice.startTime !== '' && this.selectedDevice.endTime !== '') {
+      const startHours = this.selectedDevice.startTime.split(':')[0];
+      const startMinutes = this.selectedDevice.startTime.split(':')[1];
+      const endHours = this.selectedDevice.endTime.split(':')[0];
+      const endMinutes = this.selectedDevice.endTime.split(':')[1];
+      if (Number(startHours) > Number(endHours)) {
+        this.selectedDevice.startTime = '';
+        this.selectedDevice.endTime = '';
+        this.errorMsg = 'Wrong time interval';
+      } else if (Number(startHours) === Number(endHours)) {
+        if (Number(startMinutes) >= Number(endMinutes)) {
+          this.selectedDevice.startTime = '';
+          this.selectedDevice.endTime = '';
+          this.errorMsg = 'Wrong time interval';
+        }
       }
-    });
+    }
+
   }
 
   saveChanges(event) {
     this.devices[0].email = this.selectedUser.email;
-    console.log(this.devices);
     this.deviceService.saveDevices(this.devices).subscribe();
+    this.errorMsg = '';
   }
 }
 

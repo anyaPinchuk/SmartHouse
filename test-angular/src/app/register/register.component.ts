@@ -23,7 +23,7 @@ export class RegisterComponent implements OnInit {
               private router: Router,
               private ss: SharedService) {
     this.regForm = this.fb.group({
-      email: ['', Validators.required],
+      email: ['', Validators.required, Validators.pattern('[a-zA-Z_]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}')],
       password: ['', Validators.required],
       role: ['ROLE_ADULT']
     });

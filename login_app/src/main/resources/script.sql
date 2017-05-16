@@ -1,15 +1,13 @@
 CREATE DATABASE IF NOT EXISTS `usersdb` DEFAULT CHARACTER SET utf8 ;
 USE `usersdb` ;
 
--- -----------------------------------------------------
--- Table `usersdb`.`house`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `usersdb`.`house` (
   `id_house` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `owner_login` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id_house`))
   ENGINE = InnoDB
   DEFAULT CHARACTER SET = utf8;
+
 
 -- -----------------------------------------------------
 -- Table `usersdb`.`address`
@@ -56,11 +54,12 @@ CREATE TABLE IF NOT EXISTS `usersdb`.`device` (
 CREATE TABLE IF NOT EXISTS `usersdb`.`user` (
   `id_user` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `date_of_registration` DATE NOT NULL,
-  `login` VARCHAR(255) UNIQUE NOT NULL,
+  `login` VARCHAR(255) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
   `role` VARCHAR(255) NOT NULL,
   `id_house` BIGINT(20) NULL DEFAULT NULL,
   PRIMARY KEY (`id_user`),
+  UNIQUE INDEX `UK_587tdsv8u5cvheyo9i261xhry` (`login` ASC),
   INDEX `FK_4py7q73xa95tp39ivq8oihyj6` (`id_house` ASC),
   CONSTRAINT `FK_4py7q73xa95tp39ivq8oihyj6`
   FOREIGN KEY (`id_house`)
@@ -70,44 +69,47 @@ CREATE TABLE IF NOT EXISTS `usersdb`.`user` (
 
 
 -- -----------------------------------------------------
--- Table `usersdb`.`user_email`
+-- Table `usersdb`.`restriction`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `usersdb`.`user_email` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `email` VARCHAR(255) UNIQUE NOT NULL,
-  `encoded_email` VARCHAR(255) UNIQUE NOT NULL,
-  `expire_date` BIGINT(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `UK_qm35y897bny0qjqutviap50yi` (`email` ASC))
+CREATE TABLE IF NOT EXISTS `usersdb`.`restriction` (
+  `id_restriction` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `end_time` VARCHAR(255) NULL DEFAULT NULL,
+  `hours` VARCHAR(255) NULL DEFAULT NULL,
+  `secured` BIT(1) NOT NULL,
+  `start_time` VARCHAR(255) NULL DEFAULT NULL,
+  `id_device` BIGINT(20) NULL DEFAULT NULL,
+  `id_user` BIGINT(20) NULL DEFAULT NULL,
+  PRIMARY KEY (`id_restriction`),
+  INDEX `FK_nxd9t39ng0uchpdkrnw6h2fyc` (`id_device` ASC),
+  INDEX `FK_ba8dp7qb0qjwoic9803gxue7m` (`id_user` ASC),
+  CONSTRAINT `FK_ba8dp7qb0qjwoic9803gxue7m`
+  FOREIGN KEY (`id_user`)
+  REFERENCES `usersdb`.`user` (`id_user`),
+  CONSTRAINT `FK_nxd9t39ng0uchpdkrnw6h2fyc`
+  FOREIGN KEY (`id_device`)
+  REFERENCES `usersdb`.`device` (`id_device`))
   ENGINE = InnoDB
   DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`restriction`
+-- Table `usersdb`.`user_email`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `usersdb`.`restriction` (
-  `id_restriction` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `start_time` VARCHAR(45) NULL,
-  `end_time` VARCHAR(45) NULL,
-  `hours` VARCHAR(5) NULL,
-  `id_device` BIGINT(20) NOT NULL,
-  `id_user` BIGINT(20) NOT NULL,
-  PRIMARY KEY (`id_restriction`),
-  UNIQUE INDEX `id_UNIQUE` (`id_restriction` ASC),
-  INDEX `fk_restriction_device_idx` (`id_device` ASC),
-  INDEX `fk_restriction_user1_idx` (`id_user` ASC),
-  CONSTRAINT `fk_restriction_device`
-  FOREIGN KEY (`id_device`)
-  REFERENCES `usersdb`.`device` (`id_device`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_restriction_user1`
-  FOREIGN KEY (`id_user`)
-  REFERENCES `usersdb`.`user` (`id_user`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION)
-  ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `usersdb`.`user_email` (
+  `id_user_email` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `email` VARCHAR(255) NOT NULL,
+  `expire_date` DATETIME NOT NULL,
+  `unique_key` VARCHAR(255) NOT NULL,
+  `id_house` BIGINT(20) NOT NULL,
+  PRIMARY KEY (`id_user_email`),
+  UNIQUE INDEX `UK_qm35y897bny0qjqutviap50yi` (`email` ASC),
+  UNIQUE INDEX `UK_7f4uhpa8yil3xnh9paq3210r5` (`unique_key` ASC),
+  INDEX `FK_8ssmhb4p88t7ghsa2sr384wv7` (`id_house` ASC),
+  CONSTRAINT `FK_8ssmhb4p88t7ghsa2sr384wv7`
+  FOREIGN KEY (`id_house`)
+  REFERENCES `usersdb`.`house` (`id_house`))
+  ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------

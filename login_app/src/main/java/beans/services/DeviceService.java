@@ -6,10 +6,12 @@ import entities.*;
 import exceptions.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import repository.*;
 
+import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,11 +78,17 @@ public class DeviceService {
         return iterateOverDevices(devices, user);
     }
 
-    public Device updateDevice(DeviceDTO deviceDTO) {
+    public DeviceDTO updateDevice(DeviceDTO deviceDTO) {
         Device device = deviceConverter.toEntity(deviceDTO).orElseThrow(() -> new ServiceException("device wasn't converted"));
         device = deviceRepository.findOne(device.getId());
         device.setState(deviceDTO.getState());
         deviceRepository.save(device);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Restriction restriction = restrictionRepository.findByDeviceIdAndAndUserId(deviceDTO.getId(), user.getId());
+        if (restriction != null) {
+            restriction.setSecured(deviceDTO.getSecured());
+            restrictionRepository.save(restriction);
+        }
         WorkLog workLog = new WorkLog();
         workLog.setAction(device.getState());
         workLog.setConsumedEnergy("");
@@ -90,7 +98,7 @@ public class DeviceService {
             workLog.setConsumedEnergy(countConsumedEnergy(device));
         }
         workLogRepository.save(workLog);
-        return device;
+        return deviceConverter.toDTO(device).get();
     }
 
     private String countConsumedEnergy(Device device) {
@@ -135,7 +143,22 @@ public class DeviceService {
             } else
                 fromDB = new Restriction(deviceDTO.getStartTime(), deviceDTO.getEndTime(),
                         deviceDTO.getHours(), deviceDTO.getSecured(), user, device);
+            if(deviceDTO.getSecured()){
+
+                saveDevice(deviceDTO);
+            }
             restrictionRepository.save(fromDB);
         });
+    }
+
+    public List<DeviceDTO> getAll(Principal user) {
+        User userEntity = (User) ((UsernamePasswordAuthenticationToken) user).getPrincipal();
+        List<Device> devices = deviceRepository.findAllBySmartHouse(userEntity.getSmartHouse());
+        return iterateOverDevices(devices, userEntity);
+    }
+
+    public List<DeviceDTO> getAll(User user) {
+        List<Device> devices = deviceRepository.findAllBySmartHouse(user.getSmartHouse());
+        return iterateOverDevices(devices, user);
     }
 }

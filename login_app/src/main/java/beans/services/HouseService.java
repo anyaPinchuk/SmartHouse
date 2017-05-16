@@ -1,7 +1,6 @@
 package beans.services;
 
 import dto.HouseDTO;
-import dto.UserDTO;
 import entities.Address;
 import entities.House;
 import entities.UserEmail;
@@ -9,10 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 import repository.AddressRepository;
 import repository.HouseRepository;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,8 +57,10 @@ public class HouseService {
             address.setSmartHouse(house);
             addressRepository.save(address);
             Long expireDate = System.currentTimeMillis() + 1209600000;
-            mailService.sendEmail(houseDTO.getOwnerLogin(), getTokenFromEmail(houseDTO.getOwnerLogin()), expireDate);
-            UserEmail userEmail = new UserEmail(houseDTO.getOwnerLogin(), getTokenFromEmail(houseDTO.getOwnerLogin()), expireDate);
+            Timestamp timestamp = new Timestamp(expireDate);
+            UserEmail userEmail = new UserEmail(houseDTO.getOwnerLogin(), userService.getUniqueKey(), timestamp);
+            mailService.sendEmail(houseDTO.getOwnerLogin(), userEmail.getKey());
+            userEmail.setSmartHouse(house);
             userService.saveUserEmail(userEmail);
             return true;
         } else {
@@ -80,7 +81,5 @@ public class HouseService {
         return houseDTOS;
     }
 
-    public String getTokenFromEmail(String email) {
-        return DigestUtils.md5DigestAsHex(email.getBytes());
-    }
+
 }

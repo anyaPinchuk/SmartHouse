@@ -4,5 +4,6 @@ import entities.UserEmail;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserEmailRepository  extends JpaRepository<UserEmail, Long> {
-    UserEmail findByEncodedEmail(String email);
+    UserEmail findByKey(String key);
+    UserEmail findByEmail(String email);
 }

@@ -16,6 +16,7 @@ import java.io.IOException;
 @Configuration
 @PropertySource({"classpath:application.xml"})
 @ComponentScan("beans")
+@Import({ AppWebSocketConfig.class })
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override

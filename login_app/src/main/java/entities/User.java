@@ -11,6 +11,7 @@ public class User {
     private Date dateOfRegistration;
     private String role;
     private House smartHouse;
+    private String sessionID;
 
     public User() {
 
@@ -85,5 +86,14 @@ public class User {
 
     public void setSmartHouse(House smartHouse) {
         this.smartHouse = smartHouse;
+    }
+
+    @Column(name = "session_id")
+    public void setSessionID(String sessionID) {
+        this.sessionID = sessionID;
+    }
+
+    public String getSessionID() {
+        return sessionID;
     }
 }

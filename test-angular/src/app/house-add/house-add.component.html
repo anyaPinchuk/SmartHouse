@@ -3,25 +3,29 @@
         (ngSubmit)="doAdd($event)" #appForm="ngForm">
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="country" required type="text" name="country" id="country" class="validate border-bottom">
+        <input formControlName="country" required type="text" name="country" id="country" min="2" max="30"
+               class="validate border-bottom">
         <label for="country">Country</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="city" required type="text" name="city" id="city" class="validate border-bottom">
+        <input formControlName="city" required type="text" name="city" id="city" min="2" max="30"
+               class="validate border-bottom">
         <label for="city">City</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="street" required type="text" name="street" id="street" class="validate border-bottom">
+        <input formControlName="street" required type="text" name="street" id="street" min="2" max="30"
+               class="validate border-bottom">
         <label for="street">Street</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="house" required type="text" name="house" id="house" class="validate border-bottom">
+        <input formControlName="house" required type="text" name="house" id="house" min="1" max="5"
+               class="validate border-bottom">
         <label for="house">House</label>
       </div>
     </div>
@@ -33,7 +37,8 @@
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="ownerLogin" required type="email" name="ownerLogin" id="email" class="validate border-bottom">
+        <input formControlName="ownerLogin" required name="ownerLogin" id="email" min="4" max="30"
+              class="validate border-bottom">
         <label for="email">Email</label>
       </div>
     </div>

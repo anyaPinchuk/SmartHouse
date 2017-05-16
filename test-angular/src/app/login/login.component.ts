@@ -27,7 +27,9 @@ export class LoginComponent implements OnInit {
     });
     this.route.queryParams
       .subscribe((queryParams: Params) => {
-        this.errorMsg = queryParams['error'];
+        if (queryParams['error'] === 'wrong_credentials') {
+          this.errorMsg = 'User with such login and password does not exist';
+        }
         const email = queryParams['email'];
         if (email) {
           (<FormControl>this.loginForm.controls['email']).setValue(email);

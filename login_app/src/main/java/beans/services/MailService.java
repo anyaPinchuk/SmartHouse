@@ -31,9 +31,9 @@ public class MailService {
         this.mailSender = mailSender;
     }
 
-    public boolean sendEmail(final String ownerEmail, final String confirmationToken, final Long expireDate) {
+    public boolean sendEmail(final String ownerEmail, final String confirmationToken) {
         try {
-            MimeMessage email = getMimeMessage(ownerEmail, confirmationToken, expireDate);
+            MimeMessage email = getMimeMessage(ownerEmail, confirmationToken);
             mailSender.send(email);
             return true;
         } catch (MailException | MessagingException e) {
@@ -42,12 +42,12 @@ public class MailService {
         }
     }
 
-    private MimeMessage getMimeMessage(final String ownerEmail, final String confirmationToken, final Long expireDate) throws MessagingException {
+    private MimeMessage getMimeMessage(final String ownerEmail, final String confirmationToken) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(ownerEmail);
         String subject = "Confirm email from Smart house";
-        String confirmationUrl = environment.getProperty("email.confirm.url") + "?token=" + confirmationToken + "&expire=" + expireDate;
+        String confirmationUrl = environment.getProperty("email.confirm.url") + "?token=" + confirmationToken;
         String msg = "<html><body>To create an account click on link below";
         helper.setFrom("SmartHouse");
         helper.setSubject(subject);

@@ -4,19 +4,22 @@
 
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="email" type="email" name="email" id="email" class="validate border-bottom" disabled>
-        <label data-error="wrong" data-success="right" for="email">Email</label>
+        <input formControlName="email" name="email" id="email" type="email"
+               class="validate border-bottom" min="4" max="30" disabled>
+        <label for="email">Email</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="password" type="password" name="password" id="password" class="validate border-bottom" required>
+        <input min="4" max="30" formControlName="password" type="password" name="password" id="password"
+               class="validate border-bottom" required>
         <label for="password">Password</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="confirmPassword" type="password" name="password" id="password1" class="validate border-bottom" required>
+        <input min="4" max="30" formControlName="confirmPassword" type="password" name="password" id="password1"
+               class="validate border-bottom" required>
         <label for="password1">Confirm password</label>
       </div>
     </div>

@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {SharedService} from './shared/shared.service';
 import {User} from './shared/user';
 import {Http} from '@angular/http';
+import {DeviceService} from './shared/device.service';
+import {isBoolean} from 'util';
 
 @Component({
   selector: 'app-root',
@@ -17,74 +19,44 @@ export class AppComponent implements OnInit {
 
   constructor(private ss: SharedService,
               private http: Http,
-              private user: User) {
+              private user: User,
+              private  deviceService: DeviceService) {
   }
 
 
   ngOnInit(): void {
-    // this.ss.onMainEvent.subscribe(item => {
-    //   this.isAuthorized = item.isAuthorized;
-    //   this.isAdmin = item.isAdmin;
-    //   this.isOwner = item.isOwner;
-    // });
     this.ss.onMainEvent.subscribe(item => {
-      this.http.get('api/user/checkRights').subscribe(
-        (data) => {
-          this.user = data.json();
-          console.log(this.user);
-          if (this.user.email === '') {
-            // this.router.navigateByUrl('/login');
-          } else {
-            switch (this.user.role) {
-              case 'ROLE_OWNER': {
-                // this.ss.onMainEvent.emit({
-                //   isOwner: true,
-                //   isAuthorized: true,
-                //   isAdmin: false,
-                //   isChild: false,
-                //   isGuest: false
-                // });
-                this.isOwner = true;
-                this.isAuthorized = true;
-                break;
-              }
-              case 'ROLE_ADMIN': {
-                // this.ss.onMainEvent.emit({
-                //   isOwner: false,
-                this.isAuthorized = true;
-                this.isAdmin = true;
-                //   isChild: false,
-                //   isGuest: false
-                // });
-                break;
-              }
-              case 'ROLE_CHILD': {
-                this.isChild = true;
-                this.isAuthorized = true;
-                // this.ss.onMainEvent.emit({
-                //   isOwner: false,
-                //   isAuthorized: true,
-                //   isAdmin: false,
-                //   isChild: true,
-                //   isGuest: false
-                // });
-                break;
-              }
-              case 'ROLE_GUEST': {
-                this.isAuthorized = true;
-                // this.ss.onMainEvent.emit({
-                //   isOwner: false,
-                //   isAuthorized: true,
-                //   isAdmin: false,
-                //   isChild: false,
-                //   isGuest: true
-                // });
-                break;
+      if (isBoolean(item)) {
+        this.http.get('api/user/checkRights').subscribe(
+          (data) => {
+            this.user = data.json();
+            if (this.user.email !== '') {
+              this.deviceService.connect();
+              switch (this.user.role) {
+                case 'ROLE_OWNER': {
+                  this.isOwner = true;
+                  this.isAuthorized = true;
+                  break;
+                }
+                case 'ROLE_ADMIN': {
+                  this.isAuthorized = true;
+                  this.isAdmin = true;
+                  break;
+                }
+                case 'ROLE_CHILD': {
+                  this.isChild = true;
+                  this.isAuthorized = true;
+                  break;
+                }
+                case 'ROLE_GUEST': {
+                  this.isAuthorized = true;
+                  break;
+                }
               }
             }
           }
-        }
-      );
+        );
+      }
     });
   }
 }

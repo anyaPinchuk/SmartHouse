@@ -2,9 +2,9 @@
   <div class="collection col s10 offset-s1">
     <a *ngFor="let user of users" class="collection-item blue-text"  (click)="selectUser(user)">
       <h3>Email: {{user.email}}</h3>
-      <h4>Role: {{user.role}}</h4>
+      <h4>Role: {{user.role | slice:5}}</h4>
       <p>Date of registration: {{user.dateOfRegistration | date:'dd.MM.y'}}</p>
-      <button class="btn" data-target="modal">Manage</button>
+      <button class="btn" id="openModalBtn" data-target="modal">Manage</button>
     </a>
   </div>
 </div>
@@ -23,12 +23,12 @@
     *ngIf="!selectedDevice.secured">Start time</label>
     <input type="text" (change)="changeInput('endTime',endTime)" [(ngModel)]="selectedDevice.endTime" *ngIf="!selectedDevice.secured"
            placeholder="HH:MM" #endTime> <label
-    *ngIf="!selectedDevice.secured">End time </label>
+    *ngIf="!selectedDevice.secured">End time </label><p class="red-text center">{{errorMsg}}</p>
     <input type="number" (change)="changeInput('hours',hours)" [(ngModel)]="selectedDevice.hours" *ngIf="!selectedDevice.secured"
            placeholder="Input hours" #hours><label
     *ngIf="!selectedDevice.secured">Hours </label>
   </div>
-  <p class="red-text center">{{errorMsg}}</p>
+
   <div class="modal-footer">
     <a class="modal-action modal-close waves-effect waves-green btn-flat" (click)="saveChanges($event)">Save</a>
   </div>

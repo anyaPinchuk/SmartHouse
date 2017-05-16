@@ -3,6 +3,7 @@ import {Device} from './device';
 import {DeviceService} from '../shared/device.service';
 import {SharedService} from '../shared/shared.service';
 import {Router} from '@angular/router';
+import {isBoolean} from 'util';
 
 
 @Component({
@@ -16,21 +17,18 @@ export class DeviceComponent implements OnInit {
 
   constructor(private deviceService: DeviceService,
               private ss: SharedService,
-              private router: Router,
-              ) {
+              private router: Router) {
   }
 
   ngOnInit() {
+    this.ss.onMainEvent.subscribe(item => {
+      if (!isBoolean(item)) {
+        this.devices = item;
+      }
+    });
     this.deviceService.getDevices().subscribe(
       (data) => {
         this.devices = data.json();
-        for (let i = 0; i < this.devices.length; i++) {
-          if (this.devices[i].name === 'TV') {
-            this.devices[i].secured = false;
-          } else if (this.devices[i].name.indexOf('Light') >= 0) {
-            this.devices[i].secured = false;
-          }
-        }
         this.ss.onMainEvent.emit(true);
       },
       (error) => {
@@ -45,7 +43,8 @@ export class DeviceComponent implements OnInit {
     this.deviceService.updateDevice(device)
       .subscribe(
         (data) => {
-          console.log(data);
+            console.log(device);
+            this.deviceService.send(JSON.stringify(device), '/api/notifyOwner');
         }
       );
   }

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 
 
 @RestController
@@ -85,10 +84,19 @@ public class UserRESTController {
     }
 
     @GetMapping("/confirmEmail")
-    public RedirectView confirm(@RequestParam String token, @RequestParam Long expire) {
-        if (userService.checkEmailForExisting(token, expire))
-            return new RedirectView("/user/new?email=" + userService.findEmailByEncodedEmail(token));
+    public RedirectView confirm(@RequestParam String token) {
+        if (userService.checkKeyForExisting(token))
+            return new RedirectView("/user/new?email=" + userService.findEmailByKey(token));
         else return new RedirectView("/login");
+    }
+
+    @GetMapping("/sendConfirm")
+    public RedirectView sendConfirm(@RequestParam String email) {
+        if (!"".equals(email)) {
+            userService.sendConfirm(email);
+
+        }
+        return new RedirectView("/house/all");
     }
 
     @PostMapping("/new")

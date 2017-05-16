@@ -14,8 +14,10 @@ import exceptions.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -23,6 +25,7 @@ public class UserService {
     private HouseRepository houseRepository;
     private UserConverter converter;
     private UserEmailRepository emailRepository;
+    private MailService mailService;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -32,6 +35,11 @@ public class UserService {
     @Autowired
     public void setHouseRepository(HouseRepository houseRepository) {
         this.houseRepository = houseRepository;
+    }
+
+    @Autowired
+    public void setMailService(MailService mailService) {
+        this.mailService = mailService;
     }
 
     @Autowired
@@ -54,7 +62,7 @@ public class UserService {
     }
 
 
-    private User loadAccountByUsername(String username) {
+    public User loadAccountByUsername(String username) {
         return userRepository.findUserByLogin(username);
     }
 
@@ -91,18 +99,21 @@ public class UserService {
         return emailRepository.save(userEmail);
     }
 
-    public String findEmailByEncodedEmail(String encodedEmail) {
-        return encodedEmail != null ? emailRepository.findByEncodedEmail(encodedEmail).getEmail() : null;
+    public String findEmailByKey(String token) {
+        return token != null ? emailRepository.findByKey(token).getEmail() : null;
     }
 
-    public boolean checkEmailForExisting(String encodedEmail, Long expire) {
-        if (encodedEmail == null) return false;
-        UserEmail userEmail = emailRepository.findByEncodedEmail(encodedEmail);
+    public boolean checkKeyForExisting(String key) {
+        if (key == null) return false;
+        UserEmail userEmail = emailRepository.findByKey(key);
         if (userEmail != null) {
-            Long currentTime = System.currentTimeMillis();
-            return expire.equals(userEmail.getExpireDate()) && currentTime >= userEmail.getExpireDate();
+            Long current = System.currentTimeMillis();
+            Timestamp currentTime = new Timestamp(current);
+            Timestamp expire = userEmail.getExpireDate();
+            return currentTime.compareTo(expire) < 0;
         } else return false;
     }
+
 
     public List<UserDTO> findUsersByHouse(House house) {
         List<User> users = userRepository.findAllBySmartHouse(house);
@@ -118,5 +129,19 @@ public class UserService {
             });
             return userDTOS;
         } else return new ArrayList<>();
+    }
+
+    public void sendConfirm(String email) {
+        UserEmail userEmail = emailRepository.findByEmail(email);
+        if (userEmail != null) {
+            userEmail.setKey(getUniqueKey());
+            mailService.sendEmail(email, userEmail.getKey());
+            emailRepository.save(userEmail);
+        }
+    }
+
+    String getUniqueKey() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
 }
