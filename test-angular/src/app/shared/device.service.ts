@@ -11,6 +11,7 @@ export class DeviceService {
   private url = 'http://localhost:8080/';
   public stompClient: any;
   private sendUrl = '/api/devices';
+  isConnected = false;
 
   constructor(private http: Http,
               private user: User,
@@ -42,6 +43,7 @@ export class DeviceService {
     const socket = new SockJS(this.url);
     this.stompClient = Stomp.over(socket);
     this.stompClient.connect({}, function (frame) {
+      that.isConnected = true;
       that.stompClient.subscribe('/api/connect');
       that.stompClient.subscribe('/user/queue/updateDevices', function (devices) {
         that.ss.onMainEvent.emit(JSON.parse(devices.body));

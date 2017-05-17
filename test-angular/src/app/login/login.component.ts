@@ -38,8 +38,17 @@ export class LoginComponent implements OnInit {
   }
 
   doLogin(event) {
-    console.log(this.loginForm.value);
+    const form = this.loginForm.getRawValue();
     this.ss.onMainEvent.emit(true);
+    if (form.email === '') {
+      this.errorMsg = 'field email can not be empty';
+      return;
+    } else if (form.password === '') {
+      this.errorMsg = 'field password can not be empty';
+      return;
+    } else {
+      this.errorMsg = '';
+    }
     this.http.post('/api/user/login', this.loginForm)
       .subscribe(
         error => console.error('could not post because', error));

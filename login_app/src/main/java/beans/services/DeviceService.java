@@ -169,7 +169,7 @@ public class DeviceService {
         List<DeviceDTO> deviceDTOS = new ArrayList<>();
         devices.forEach(device -> {
             List<WorkLog> logs = workLogRepository.findAllByDateOfActionIsBetweenAndActionAndDevice(
-                    startDate, endDate, "off", device);
+                    startDate, endDate, "off", device.getId());
             DeviceDTO dto = deviceConverter.toDTO(device).orElseThrow(() -> new ServiceException("device wasn't converted"));
             logs.forEach(log -> {
                 Long result = Long.valueOf(log.getConsumedEnergy());

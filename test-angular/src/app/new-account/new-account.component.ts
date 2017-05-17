@@ -37,7 +37,7 @@ export class NewAccountComponent implements OnInit {
 
   doCreate(event) {
     const form = this.userForm.getRawValue();
-    if (form.password === form.confirmPassword) {
+    if ((form.password === form.confirmPassword) && (form.password.trim() !== '' && form.confirmPassword.trim() !== '')) {
       this.http.post('/api/user/new', form)
         .subscribe(
           (data) => {

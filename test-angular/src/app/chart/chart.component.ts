@@ -58,7 +58,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
         type: 'pie'
       },
       title: {
-        text: 'Power of devices'
+        text: 'Working hours of devices'
       },
       tooltip: {
         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -88,7 +88,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
     this.deviceService.getDevices().subscribe(
       (data) => {
         const devices = data.json();
-        let info = [];
+        const info = [];
         devices.forEach(obj => {
           info.push(
             {
@@ -99,7 +99,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
         ChartComponent.renderChartPower(info);
       },
       (error) => {
-         this.router.navigateByUrl('/login');
+        this.router.navigateByUrl('/login');
       }
     );
   }
@@ -122,16 +122,20 @@ export class ChartComponent implements OnInit, AfterViewInit {
     let day: string = $('#datepicker1').pickadate('picker').get('highlight', 'dd');
     let month: string = $('#datepicker1').pickadate('picker').get('highlight', 'mm');
     this.startDate = year + '-' + month + '-' + day;
+    const start = new Date(Number(year), Number(month) - 1, Number(day));
     year = $('#datepicker2').pickadate('picker').get('highlight', 'yyyy');
     day = $('#datepicker2').pickadate('picker').get('highlight', 'dd');
     month = $('#datepicker2').pickadate('picker').get('highlight', 'mm');
     this.endDate = year + '-' + month + '-' + day;
-    console.log(this.startDate);
-    console.log(this.endDate);
+    const end = new Date(Number(year), Number(month) - 1, Number(day));
+    if (start > end) {
+      notify('Wrong date interval');
+      return;
+    }
     this.deviceService.getDevicesByDateInterval(this.startDate, this.endDate).subscribe(
       (data) => {
         const devices = data.json();
-        let info = [];
+        const info = [];
         devices.forEach(obj => {
           info.push(
             {
@@ -139,13 +143,18 @@ export class ChartComponent implements OnInit, AfterViewInit {
               y: Number(obj.energy)
             });
         });
-        ChartComponent.renderChartHours(info);
+        if (info !== []) {
+          ChartComponent.renderChartHours(info);
+        }
       },
       (error) => {
-         this.router.navigateByUrl('/login');
+        this.router.navigateByUrl('/login');
       }
     );
 
   }
 
+}
+function notify(msg) {
+  Materialize.toast(msg, 4000);
 }

@@ -33,18 +33,26 @@ export class RegisterComponent implements OnInit {
     const form = this.regForm.getRawValue();
     if (form.role === '') {
       this.errorMsg = 'Please, choose the user role';
+      return;
+    } else if (form.email === '') {
+      this.errorMsg = 'Field email can not be empty';
+      return;
+    } else if (form.password === '') {
+      this.errorMsg = 'Field password can not be empty';
+      return;
     } else {
-      this.http.post('/api/user/reg', form)
-        .subscribe(
-          (data) => {
-            if (data.text() === 'user exists') {
-              this.errorMsg = 'User with this login already exists';
-            } else {
-              this.router.navigateByUrl('/device/all');
-            }
-          },
-          error => console.error('could not post because', error),
-        );
+      this.errorMsg = '';
     }
+    this.http.post('/api/user/reg', form)
+      .subscribe(
+        (data) => {
+          if (data.text() === 'user exists') {
+            this.errorMsg = 'User with this login already exists';
+          } else {
+            this.router.navigateByUrl('/device/all');
+          }
+        },
+        error => console.error('could not post because', error),
+      );
   }
 }

@@ -31,7 +31,7 @@ export class DeviceAddComponent implements OnInit {
 
   doAdd(event) {
     const form = this.deviceForm.getRawValue();
-    if (form.name !== '' && form.power !== '') {
+    if (form.name.trim() !== '' && form.power.trim() !== '') {
       this.http.post('/api/device/add', form)
         .subscribe(
           (data) => {

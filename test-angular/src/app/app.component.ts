@@ -31,7 +31,9 @@ export class AppComponent implements OnInit {
           (data) => {
             this.user = data.json();
             if (this.user.email !== '') {
-              this.deviceService.connect();
+              if (!this.deviceService.isConnected) {
+                this.deviceService.connect();
+              }
               switch (this.user.role) {
                 case 'ROLE_OWNER': {
                   this.isOwner = true;

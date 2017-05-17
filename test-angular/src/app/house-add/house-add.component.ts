@@ -29,15 +29,20 @@ export class HouseAddComponent implements OnInit {
 
   doAdd(event) {
     const form = this.houseForm.getRawValue();
-    this.http.post('/api/house/add', form)
-      .subscribe(
-        (data) => {
-          this.router.navigateByUrl('/house/all');
-        },
-        (error) => {
-          console.error('could not post because', error);
-        }
-      );
+    if (form.country.trim() !== '' && form.city.trim() !== '' && form.street.trim() !== '' && form.house.trim() !== ''
+      && form.ownerLogin.trim() !== '') {
+      this.http.post('/api/house/add', form)
+        .subscribe(
+          (data) => {
+            this.router.navigateByUrl('/house/all');
+          },
+          (error) => {
+            console.error('could not post because', error);
+          }
+        );
+    } else {
+      Materialize.toast('Please fill the required fields', 4000);
+    }
   }
 
   ngOnInit() {
