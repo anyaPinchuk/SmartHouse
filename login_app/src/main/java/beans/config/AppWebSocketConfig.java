@@ -28,7 +28,6 @@ public class AppWebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        //  registry.addEndpoint("/").setAllowedOrigins("*").withSockJS().setInterceptors(handshakeInterceptor);
         registry.addEndpoint("/").setAllowedOrigins("*").withSockJS().setInterceptors(handshakeInterceptor);
     }
 
@@ -36,8 +35,6 @@ public class AppWebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer
         messages
                 .simpDestMatchers("/api/devices")
                 .hasAnyRole("ROLE_OWNER", "ROLE_CHILD", "ROLE_ADULT", "ROLE_GUEST");
-                //.anyMessage()
-               // .authenticated();
     }
 
 }

@@ -50,7 +50,6 @@ export class DeviceManageComponent implements OnInit {
         this.selectedDevice = device;
       }
     });
-    console.log(this.selectedDevice);
   }
 
   changeInput(name, input) {

@@ -17,7 +17,7 @@ import javax.mail.internet.MimeMessage;
 @Service
 public class MailService {
 
-    protected Logger LOG = LoggerFactory.getLogger(MailService.class);
+    private Logger LOG = LoggerFactory.getLogger(MailService.class);
     private JavaMailSender mailSender;
     private Environment environment;
 
@@ -31,11 +31,10 @@ public class MailService {
         this.mailSender = mailSender;
     }
 
-    public boolean sendEmail(final String ownerEmail, final String confirmationToken) {
+    public void sendEmail(final String ownerEmail, final String confirmationToken) {
         try {
             MimeMessage email = getMimeMessage(ownerEmail, confirmationToken);
             mailSender.send(email);
-            return true;
         } catch (MailException | MessagingException e) {
             LOG.error(e.getMessage());
             throw new ServiceException(e.getMessage(), e);

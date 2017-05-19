@@ -57,9 +57,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .usernameParameter("email")    // Указываем параметры логина и пароля с формы логина
+                .usernameParameter("email")
                 .passwordParameter("password")
-                .loginProcessingUrl("/api/user/login")   // указываем action с формы логина
+                .loginProcessingUrl("/api/user/login")
                 .successHandler(mySimpleUrlAuthenticationSuccessHandler)
                 .failureHandler(myAuthenticationFailureHahdler)
                 .permitAll();

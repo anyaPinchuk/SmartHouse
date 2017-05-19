@@ -34,12 +34,12 @@ public class WebSocketController {
     }
 
     @SubscribeMapping("/devices")
-    public List<DeviceDTO> getAll(SimpMessageHeaderAccessor headerAccessor) throws Exception {
-        return deviceService.getAll(headerAccessor.getUser());
+    public List<DeviceDTO> getDevices(SimpMessageHeaderAccessor headerAccessor) throws Exception {
+        return deviceService.getAllByPrincipal(headerAccessor.getUser());
     }
 
     @SubscribeMapping("/connect")
-    public String login(SimpMessageHeaderAccessor headerAccessor, Principal principal) throws Exception {
+    public String connect(SimpMessageHeaderAccessor headerAccessor, Principal principal) throws Exception {
         String session = principal.getName();
         User user = (User) ((UsernamePasswordAuthenticationToken) headerAccessor.getUser()).getPrincipal();
         if (!session.equals(user.getSessionID())) {
@@ -50,7 +50,7 @@ public class WebSocketController {
     }
 
     @MessageMapping("/notifyOwner")
-    public void notifyOwner(DeviceDTO deviceDTO, SimpMessageHeaderAccessor headerAccessor, Principal principal) {
+    public void notifyOwner(DeviceDTO deviceDTO, SimpMessageHeaderAccessor headerAccessor) {
         User user = (User) ((UsernamePasswordAuthenticationToken) headerAccessor.getUser()).getPrincipal();
         User owner = userRepository.findBySmartHouseAndRole(user.getSmartHouse(), "ROLE_OWNER");
         deviceDTO.setEmail(user.getLogin());

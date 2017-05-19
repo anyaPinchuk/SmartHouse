@@ -63,10 +63,9 @@ public class HouseService {
             userEmail.setSmartHouse(house);
             userService.saveUserEmail(userEmail);
             return true;
-        } else {
-            LOG.error("house was not saved");
-            return false;
         }
+        LOG.error("house was not saved");
+        return false;
     }
 
     public List<HouseDTO> getAll() {

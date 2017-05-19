@@ -4,8 +4,10 @@ import beans.services.DeviceService;
 import beans.services.UserService;
 import dto.DeviceDTO;
 import dto.UserDTO;
+import dto.WorkLogResult;
 import entities.Device;
 import entities.User;
+import entities.WorkLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,21 +54,21 @@ public class DeviceRESTController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyRole({'ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST'})")
+    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getAll() {
         LOG.info("handle post request by url /api/device/all");
-        return ResponseEntity.ok(deviceService.getAll());
+        return ResponseEntity.ok(deviceService.getAll(null));
     }
 
     @PostMapping("/update")
-    @PreAuthorize("hasAnyRole({'ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST'})")
+    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> update(@RequestBody DeviceDTO deviceDTO, BindingResult bindingResult) {
         LOG.info("handle post request by url /api/device/update");
         if (!bindingResult.hasErrors()) {
             DeviceDTO device = deviceService.updateDevice(deviceDTO);
-            messagingTemplate.convertAndSend("/topic/devices", deviceService.getAll());
+            messagingTemplate.convertAndSend("/topic/devices", deviceService.getAll(null));
             return ResponseEntity.ok(device);
         } else {
             LOG.info("bad request {}", bindingResult.getAllErrors());
@@ -75,7 +77,7 @@ public class DeviceRESTController {
     }
 
     @GetMapping("/getByDate")
-    @PreAuthorize("hasAnyRole({'ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST'})")
+    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getByDate(@RequestParam String startDate,
                                        @RequestParam String endDate) throws ParseException {
@@ -86,7 +88,21 @@ public class DeviceRESTController {
         return ResponseEntity.ok(deviceService.getByDateInterval(start, end));
     }
 
+    @GetMapping("/getWorkLogs")
+    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<?> getWorkLogs(@RequestParam String startDate,
+                                       @RequestParam String endDate) throws Exception {
+        LOG.info("handle post request by url /api/device/getWorkLogs");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Timestamp start = new Timestamp(format.parse(startDate).getTime());
+        Timestamp end = new Timestamp(format.parse(endDate).getTime());
+        List<WorkLogResult> workLogs = deviceService.getWorkLogsByDevice(start, end);
+        return ResponseEntity.ok(workLogs);
+    }
+
     @GetMapping("/get")
+    @PreAuthorize("hasRole('ROLE_OWNER')")
     public ResponseEntity<?> getByUser(@RequestParam String email) {
         if (!"".equals(email)) {
             return ResponseEntity.ok(deviceService.getAllByUser(email));
@@ -123,4 +139,6 @@ public class DeviceRESTController {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
     }
+
+
 }

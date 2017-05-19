@@ -75,6 +75,10 @@ export class DeviceService {
   getDevicesByDateInterval(start, end): any {
     return this.http.get('/api/device/getByDate?startDate=' + start + '&endDate=' + end);
   }
+
+  getWorkLogsByDevice(startDate: string, endDate: string) {
+    return this.http.get('/api/device/getWorkLogs?startDate=' + startDate + '&endDate=' + endDate );
+  }
 }
 
 

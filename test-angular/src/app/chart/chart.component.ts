@@ -2,7 +2,10 @@ import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {DeviceService} from '../shared/device.service';
 import {Router} from '@angular/router';
 import {SharedService} from '../shared/shared.service';
-declare const Highcharts: any;
+import {Device} from '../device/device';
+import {WorkLogResult} from '../shared/work-log-result';
+import {ChartService} from '../shared/chart.service';
+
 
 @Component({
   selector: 'app-chart',
@@ -13,95 +16,11 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   startDate = '';
   endDate = '';
-
-  static renderChartPower(data) {
-    const myChart = Highcharts.chart('pie1', {
-      chart: {
-        plotBackgroundColor: null,
-        plotBorderWidth: null,
-        plotShadow: false,
-        type: 'pie'
-      },
-      title: {
-        text: 'Power of devices'
-      },
-      tooltip: {
-        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-      },
-      plotOptions: {
-        pie: {
-          allowPointSelect: true,
-          cursor: 'pointer',
-          dataLabels: {
-            enabled: true,
-            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-            style: {
-              color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-            }
-          }
-        }
-      }
-    });
-    myChart.addSeries({
-      name: 'Devices',
-      colorByPoint: true,
-      data: data
-    });
-  }
-
-  static renderChartHours(data) {
-    const myChart = Highcharts.chart('pie2', {
-      chart: {
-        plotBackgroundColor: null,
-        plotBorderWidth: null,
-        plotShadow: false,
-        type: 'pie'
-      },
-      title: {
-        text: 'Working hours of devices'
-      },
-      tooltip: {
-        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-      },
-      plotOptions: {
-        pie: {
-          allowPointSelect: true,
-          cursor: 'pointer',
-          dataLabels: {
-            enabled: true,
-            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-            style: {
-              color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-            }
-          }
-        }
-      }
-    });
-    myChart.addSeries({
-      name: 'Devices',
-      colorByPoint: true,
-      data: data
-    });
-  }
+  workLogResults: WorkLogResult[];
 
   ngAfterViewInit() {
-    this.deviceService.getDevices().subscribe(
-      (data) => {
-        const devices = data.json();
-        const info = [];
-        devices.forEach(obj => {
-          info.push(
-            {
-              name: obj.name,
-              y: Number(obj.power)
-            });
-        });
-        ChartComponent.renderChartPower(info);
-      },
-      (error) => {
-        this.router.navigateByUrl('/login');
-      }
-    );
+    this.buildBarCharts();
+    this.buildPieCharts();
   }
 
   constructor(private deviceService: DeviceService,
@@ -110,14 +29,100 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    $('.datepicker').pickadate({
-      selectMonths: true, // Creates a dropdown to control month
-      selectYears: 15 // Creates a dropdown of 15 years to control year
+    const that = this;
+    const $input = $('#datepicker1').pickadate({
+      selectMonths: true,
+      selectYears: 15,
+    }).on('change', function () {
+      that.rebuild();
     });
+    const $input2 = $('#datepicker2').pickadate({
+      selectMonths: true,
+      selectYears: 15,
+    }).on('change', function () {
+      that.rebuild();
+    });
+    const picker = $input.pickadate('picker');
+    picker.set('select', new Date());
+    const picker2 = $input2.pickadate('picker');
+    picker2.set('select', new Date());
     this.ss.onMainEvent.emit(true);
   }
 
-  buildCharts(event) {
+  rebuild() {
+    this.buildPieCharts();
+    this.buildBarCharts();
+  }
+
+  buildBarCharts() {
+    const startEndDates = this.getDates();
+    if (startEndDates.start > startEndDates.end) {
+      notify('Wrong date interval');
+      return;
+    }
+    this.deviceService.getWorkLogsByDevice(this.startDate, this.endDate).subscribe(
+      (data) => {
+        this.workLogResults = data.json();
+        if (this.workLogResults.length !== 0) {
+          const myChart = ChartService.renderBarChartEnergy();
+          const myChartHours = ChartService.renderBarChartHours();
+          this.workLogResults.forEach(obj => {
+            let info = [0, 0, 0, 0, 0, 0, 0];
+            const workLogs = obj.workLogList;
+            workLogs.forEach(worklog => {
+              const date = new Date(worklog.dateOfAction);
+              switch (date.getDay()) {
+                case 0: {
+                  info[0] = (info[0] + Number(worklog.consumedEnergy)) / 2;
+                  break;
+                }
+                case 1: {
+                  info[1] += (info[1] + Number(worklog.consumedEnergy)) / 2;
+                  break;
+                }
+                case 2: {
+                  info[2] += (info[2] + Number(worklog.consumedEnergy)) / 2;
+                  break;
+                }
+                case 3: {
+                  info[3] += (info[3] + Number(worklog.consumedEnergy)) / 2;
+                  break;
+                }
+                case 4: {
+                  info[4] += (info[4] + Number(worklog.consumedEnergy)) / 2;
+                  break;
+                }
+                case 5: {
+                  info[5] += (info[5] + Number(worklog.consumedEnergy)) / 2;
+                  break;
+                }
+                case 6: {
+                  info[6] += (info[6] + Number(worklog.consumedEnergy)) / 2;
+                  break;
+                }
+              }
+            });
+            myChart.addSeries({
+              name: obj.deviceName,
+              data: info
+            });
+            for (let i = 0; i < info.length; i++) {
+              info[i] = Math.floor(info[i] / Number(obj.devicePower));
+            }
+            myChartHours.addSeries({
+              name: obj.deviceName,
+              data: info
+            });
+          });
+        }
+      },
+      (error) => {
+        this.router.navigateByUrl('/login');
+      }
+    );
+  }
+
+  getDates() {
     let year: string = $('#datepicker1').pickadate('picker').get('highlight', 'yyyy');
     let day: string = $('#datepicker1').pickadate('picker').get('highlight', 'dd');
     let month: string = $('#datepicker1').pickadate('picker').get('highlight', 'mm');
@@ -128,7 +133,14 @@ export class ChartComponent implements OnInit, AfterViewInit {
     month = $('#datepicker2').pickadate('picker').get('highlight', 'mm');
     this.endDate = year + '-' + month + '-' + day;
     const end = new Date(Number(year), Number(month) - 1, Number(day));
-    if (start > end) {
+    return {
+      start: start, end: end
+    };
+  }
+
+  buildPieCharts() {
+    const startEndDates = this.getDates();
+    if (startEndDates.start > startEndDates.end) {
       notify('Wrong date interval');
       return;
     }
@@ -136,15 +148,22 @@ export class ChartComponent implements OnInit, AfterViewInit {
       (data) => {
         const devices = data.json();
         const info = [];
+        const infoHours = [];
         devices.forEach(obj => {
           info.push(
             {
               name: obj.name,
               y: Number(obj.energy)
             });
+          infoHours.push(
+            {
+              name: obj.name,
+              y: Math.floor(Number(obj.energy) / Number(obj.power))
+            });
         });
-        if (info !== []) {
-          ChartComponent.renderChartHours(info);
+        if (devices.length !== 0) {
+          ChartService.renderChartHours(infoHours);
+          ChartService.renderChartPower(info);
         }
       },
       (error) => {
@@ -153,7 +172,6 @@ export class ChartComponent implements OnInit, AfterViewInit {
     );
 
   }
-
 }
 function notify(msg) {
   Materialize.toast(msg, 4000);

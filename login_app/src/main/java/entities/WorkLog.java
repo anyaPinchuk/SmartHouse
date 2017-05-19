@@ -1,5 +1,7 @@
 package entities;
 
+import org.hibernate.sql.Select;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -9,8 +11,19 @@ public class WorkLog {
     private String consumedEnergy;
     private Timestamp dateOfAction;
     private String action;
+    private String hoursOfWork;
+    private String cost;
 
+    private User user;
     private Device device;
+
+    public WorkLog() {
+    }
+
+    public WorkLog(String consumedEnergy, Timestamp dateOfAction) {
+        this.consumedEnergy = consumedEnergy;
+        this.dateOfAction = dateOfAction;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -55,8 +68,35 @@ public class WorkLog {
     public Device getDevice() {
         return device;
     }
+    @ManyToOne
+    @JoinColumn(name = "id_user", nullable = false)
+    public User getUser() {
+        return user;
+    }
 
     public void setDevice(Device device) {
         this.device = device;
+    }
+
+    @Column(name = "hours_of_work")
+    public String getHoursOfWork() {
+        return hoursOfWork;
+    }
+
+    public void setHoursOfWork(String hoursOfWork) {
+        this.hoursOfWork = hoursOfWork;
+    }
+
+    @Column(name = "cost")
+    public String getCost() {
+        return cost;
+    }
+
+    public void setCost(String cost) {
+        this.cost = cost;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

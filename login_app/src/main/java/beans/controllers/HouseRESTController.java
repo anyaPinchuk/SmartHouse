@@ -22,7 +22,7 @@ public class HouseRESTController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> add(@RequestBody HouseDTO houseDTO, BindingResult bindingResult) {
         LOG.info("handle post request by url /api/house/add");
@@ -35,7 +35,7 @@ public class HouseRESTController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getAll() {
         LOG.info("handle post request by url /api/house/all");

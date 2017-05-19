@@ -37,7 +37,7 @@ public class UserRESTController {
         this.userConverter = userConverter;
     }
 
-    @PreAuthorize("isAuthenticated() and hasRole('ROLE_OWNER')")
+    @PreAuthorize("hasRole('ROLE_OWNER')")
     @PostMapping("/reg")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> registration(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
@@ -55,17 +55,13 @@ public class UserRESTController {
     }
 
 
-    @PreAuthorize("isAuthenticated() and hasRole('ROLE_OWNER')")
+    @PreAuthorize("hasRole('ROLE_OWNER')")
     @GetMapping("/all")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getAll() {
         LOG.info("handle post request by url /api/user/all");
-        User user;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!"anonymousUser".equals(auth.getPrincipal())) {
-            user = (User) auth.getPrincipal();
-            return ResponseEntity.ok(userService.findUsersByHouse(user.getSmartHouse()));
-        } else return ResponseEntity.ok(new UserDTO());
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok(userService.findUsersByHouse(user.getSmartHouse()));
     }
 
     @GetMapping("/checkRights")
@@ -91,10 +87,10 @@ public class UserRESTController {
     }
 
     @GetMapping("/sendConfirm")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public RedirectView sendConfirm(@RequestParam String email) {
         if (!"".equals(email)) {
             userService.sendConfirm(email);
-
         }
         return new RedirectView("/house/all");
     }

@@ -57,11 +57,6 @@ public class UserService {
         return converter.toDTO(owner).orElseThrow(() -> new ServiceException("user wasn't converted"));
     }
 
-    public UserDTO loadUserByUsername(String username) {
-        return convertToDTO(loadAccountByUsername(username));
-    }
-
-
     public User loadAccountByUsername(String username) {
         return userRepository.findUserByLogin(username);
     }
@@ -77,14 +72,6 @@ public class UserService {
 
     public boolean checkUsernameForExisting(String username) {
         return username != null && userRepository.findUserByLogin(username) != null;
-    }
-
-    public User addOwner(UserDTO userDTO, House house) {
-        User user = new User(userDTO.getEmail(), userDTO.getPassword());
-        user.setRole("ROLE_OWNER");
-        user.setSmartHouse(house);
-        userRepository.save(user);
-        return user;
     }
 
     public UserDTO createUserFromEmail(UserDTO userDTO) {
@@ -113,7 +100,6 @@ public class UserService {
             return currentTime.compareTo(expire) < 0;
         } else return false;
     }
-
 
     public List<UserDTO> findUsersByHouse(House house) {
         List<User> users = userRepository.findAllBySmartHouse(house);
