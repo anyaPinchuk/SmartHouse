@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
+import {Http, Headers} from '@angular/http';
 import {Device} from '../device/device';
-import {SharedService} from '../shared/shared.service';
+import {SharedService} from './shared.service';
 import {User} from './user';
+import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 declare const SockJS;
 declare const Stomp;
 
@@ -77,7 +78,11 @@ export class DeviceService {
   }
 
   getWorkLogsByDevice(startDate: string, endDate: string) {
-    return this.http.get('/api/device/getWorkLogs?startDate=' + startDate + '&endDate=' + endDate );
+    return this.http.get('/api/device/getWorkLogs?startDate=' + startDate + '&endDate=' + endDate);
+  }
+
+  exportImage(form: any) {
+    return this.http.post('/api/device/image', form);
   }
 }
 

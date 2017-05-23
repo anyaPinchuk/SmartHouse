@@ -29,7 +29,8 @@
         "assets/resources/js/script.js",
         "assets/resources/js/stomp.js",
         "assets/resources/js/sockjs-0.3.4.js",
-        "../node_modules/highcharts/highcharts.js"
+        "../node_modules/highcharts/highcharts.js",
+        "../node_modules/highcharts-exporting/exporting.js"
       ],
       "environments": {
         "source": "environments/environment.ts",

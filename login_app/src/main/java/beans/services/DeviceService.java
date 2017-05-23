@@ -6,10 +6,7 @@ import dto.WorkLogResult;
 import entities.*;
 import exceptions.ServiceException;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFChart;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.joda.time.LocalDate;
-import org.openxmlformats.schemas.drawingml.x2006.chart.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,12 +16,14 @@ import repository.*;
 import java.io.FileOutputStream;
 import java.security.Principal;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class DeviceService {
 
+    private ExcelService excelService;
     private DeviceRepository deviceRepository;
     private HouseRepository houseRepository;
     private WorkLogRepository workLogRepository;
@@ -57,6 +56,11 @@ public class DeviceService {
     @Autowired
     public void setRestrictionRepository(RestrictionRepository restrictionRepository) {
         this.restrictionRepository = restrictionRepository;
+    }
+
+    @Autowired
+    public void setExcelService(ExcelService excelService) {
+        this.excelService = excelService;
     }
 
     @Autowired
@@ -196,11 +200,12 @@ public class DeviceService {
         return deviceDTOS;
     }
 
-    public List<WorkLogResult> getWorkLogsByDevice(Timestamp start, Timestamp end) throws Exception{
+    public List<WorkLogResult> getWorkLogsByDevice(Timestamp start, Timestamp end) throws Exception {
         House house = getHouse();
         List<Device> devices = deviceRepository.findAllBySmartHouse(house);
         List<WorkLog> workLogs = workLogRepository.findAllByDateOfActionBetweenAndActionAndDevice(start, end, house.getId());
         List<WorkLogResult> workLogResults = new ArrayList<>();
+        excelService.writeStatistic(workLogs);
         devices.forEach(device -> {
             List<WorkLog> workLogList = workLogs.stream()
                     .filter(workLog -> workLog.getDevice().getId().equals(device.getId()))
@@ -211,136 +216,13 @@ public class DeviceService {
 
         });
         workLogResults.forEach(workLogResult -> {
-            workLogResult.getWorkLogList().forEach(workLog -> workLog.setDevice(null));
+            workLogResult.getWorkLogList().forEach(workLog -> {
+                workLog.setDevice(null);
+                workLog.getUser().setSmartHouse(null);
+            });
         });
-        testExcel(workLogResults);
         return workLogResults;
     }
 
-    public void testExcel(List<WorkLogResult> workLogResults) throws Exception {
-        Workbook wb = new XSSFWorkbook();
-        Sheet sheet = wb.createSheet("Sheet1");
-        Row row;
-        Cell cell;
-        workLogResults.forEach(workLogResult -> {
-            List<Long> results = new ArrayList<>();
-            for (int i = 0; i < 7; i++) {
-                results.add((long) i);
-            }
-            workLogResult.getWorkLogList().forEach(workLog -> {
-                LocalDate date = new LocalDate(workLog.getDateOfAction().getTime());
-                switch (date.getDayOfWeek()){
-                    case 0: {
-                       // results.get(0) = (results.get(0) + Long.valueOf(workLog.getConsumedEnergy()))/2;
-                        break;
-                    }
-                    case 1: {
-                       // info[1] += (info[1] + Number(worklog.consumedEnergy)) / 2;
-                        break;
-                    }
-                    case 2: {
-                        //info[2] += (info[2] + Number(worklog.consumedEnergy)) / 2;
-                        break;
-                    }
-                    case 3: {
-                        //info[3] += (info[3] + Number(worklog.consumedEnergy)) / 2;
-                        break;
-                    }
-                    case 4: {
-                        //info[4] += (info[4] + Number(worklog.consumedEnergy)) / 2;
-                        break;
-                    }
-                    case 5: {
-                        //info[5] += (info[5] + Number(worklog.consumedEnergy)) / 2;
-                        break;
-                    }
-                    case 6: {
-                       // info[6] += (info[6] + Number(worklog.consumedEnergy)) / 2;
-                        break;
-                    }
 
-                }
-            });
-        });
-        row = sheet.createRow(0);
-        row.createCell(0);
-        row.createCell(1).setCellValue("HEADER 1");
-        row.createCell(2).setCellValue("HEADER 2");
-        row.createCell(3).setCellValue("HEADER 3");
-
-        for (int r = 1; r < 5; r++) {
-            row = sheet.createRow(r);
-            cell = row.createCell(0);
-            cell.setCellValue("Serie " + r);
-            cell = row.createCell(1);
-            cell.setCellValue(new java.util.Random().nextDouble());
-            cell = row.createCell(2);
-            cell.setCellValue(new java.util.Random().nextDouble());
-            cell = row.createCell(3);
-            cell.setCellValue(new java.util.Random().nextDouble());
-        }
-
-        Drawing drawing = sheet.createDrawingPatriarch();
-        ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, 0, 5, 8, 20);
-
-        Chart chart = drawing.createChart(anchor);
-
-        CTChart ctChart = ((XSSFChart) chart).getCTChart();
-        CTPlotArea ctPlotArea = ctChart.getPlotArea();
-        CTBarChart ctBarChart = ctPlotArea.addNewBarChart();
-        CTBoolean ctBoolean = ctBarChart.addNewVaryColors();
-        ctBoolean.setVal(true);
-        ctBarChart.addNewBarDir().setVal(STBarDir.COL);
-
-        for (int r = 2; r < 6; r++) {
-            CTBarSer ctBarSer = ctBarChart.addNewSer();
-            CTSerTx ctSerTx = ctBarSer.addNewTx();
-            CTStrRef ctStrRef = ctSerTx.addNewStrRef();
-            ctStrRef.setF("Sheet1!$A$" + r);
-            ctBarSer.addNewIdx().setVal(r - 2);
-            CTAxDataSource cttAxDataSource = ctBarSer.addNewCat();
-            ctStrRef = cttAxDataSource.addNewStrRef();
-            ctStrRef.setF("Sheet1!$B$1:$D$1");
-            CTNumDataSource ctNumDataSource = ctBarSer.addNewVal();
-            CTNumRef ctNumRef = ctNumDataSource.addNewNumRef();
-            ctNumRef.setF("Sheet1!$B$" + r + ":$D$" + r);
-
-            ctBarSer.addNewSpPr().addNewLn().addNewSolidFill().addNewSrgbClr().setVal(new byte[]{0, 0, 0});
-        }
-
-        //telling the BarChart that it has axes and giving them Ids
-        ctBarChart.addNewAxId().setVal(123456);
-        ctBarChart.addNewAxId().setVal(123457);
-
-        //cat axis
-        CTCatAx ctCatAx = ctPlotArea.addNewCatAx();
-        ctCatAx.addNewAxId().setVal(123456); //id of the cat axis
-        CTScaling ctScaling = ctCatAx.addNewScaling();
-        ctScaling.addNewOrientation().setVal(STOrientation.MIN_MAX);
-        ctCatAx.addNewDelete().setVal(false);
-        ctCatAx.addNewAxPos().setVal(STAxPos.B);
-        ctCatAx.addNewCrossAx().setVal(123457); //id of the val axis
-        ctCatAx.addNewTickLblPos().setVal(STTickLblPos.NEXT_TO);
-
-        //val axis
-        CTValAx ctValAx = ctPlotArea.addNewValAx();
-        ctValAx.addNewAxId().setVal(123457); //id of the val axis
-        ctScaling = ctValAx.addNewScaling();
-        ctScaling.addNewOrientation().setVal(STOrientation.MIN_MAX);
-        ctValAx.addNewDelete().setVal(false);
-        ctValAx.addNewAxPos().setVal(STAxPos.L);
-        ctValAx.addNewCrossAx().setVal(123456); //id of the cat axis
-        ctValAx.addNewTickLblPos().setVal(STTickLblPos.NEXT_TO);
-
-        //legend
-        CTLegend ctLegend = ctChart.addNewLegend();
-        ctLegend.addNewLegendPos().setVal(STLegendPos.B);
-        ctLegend.addNewOverlay().setVal(false);
-
-        System.out.println(ctChart);
-
-        FileOutputStream fileOut = new FileOutputStream("D:\\BarChart.xlsx");
-        wb.write(fileOut);
-        fileOut.close();
-    }
 }

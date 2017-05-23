@@ -2,6 +2,7 @@ declare const Highcharts: any;
 
 
 export class ChartService {
+
   static renderChartPower(data) {
     const myChart = Highcharts.chart('pie1', {
       chart: {
@@ -9,6 +10,9 @@ export class ChartService {
         plotBorderWidth: null,
         plotShadow: false,
         type: 'pie'
+      },
+      exporting: {
+        enabled: false
       },
       title: {
         text: 'Power of devices'
@@ -35,6 +39,8 @@ export class ChartService {
       colorByPoint: true,
       data: data
     });
+
+    return myChart;
   }
 
   static renderChartHours(data) {
@@ -44,6 +50,9 @@ export class ChartService {
         plotBorderWidth: null,
         plotShadow: false,
         type: 'pie'
+      },
+      exporting: {
+        enabled: false
       },
       title: {
         text: 'Working hours of devices'
@@ -70,12 +79,16 @@ export class ChartService {
       colorByPoint: true,
       data: data
     });
+    return myChart;
   }
 
   static renderBarChartHours() {
     return Highcharts.chart('pie3', {
       chart: {
         type: 'column'
+      },
+      exporting: {
+        enabled: false
       },
       title: {
         text: 'Device chart by working hours'
@@ -131,6 +144,9 @@ export class ChartService {
       title: {
         text: 'Device chart by consumed energy'
       },
+      exporting: {
+        enabled: false
+      },
       xAxis: {
         categories: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
       },
@@ -173,4 +189,5 @@ export class ChartService {
       },
     });
   }
+
 }

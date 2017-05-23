@@ -2,6 +2,7 @@ package beans.config;
 
 import org.springframework.context.annotation.*;
 import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -34,9 +35,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return new InternalResourceViewResolver();
     }
 
+
     @Bean
-    public MultipartResolver multipartResolver() throws IOException {
-        return new StandardServletMultipartResolver();
+    public MultipartResolver multipartResolver() {
+        return new CommonsMultipartResolver();
     }
 
+//    @Bean
+//    public MultipartResolver multipartResolver() throws IOException {
+//        return new StandardServletMultipartResolver();
+//    }
 }
