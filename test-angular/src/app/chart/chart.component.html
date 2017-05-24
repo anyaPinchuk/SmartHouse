@@ -1,11 +1,17 @@
 <div class="row">
-  <div class="col s3">
+  <div class="col s2">
     <label>Start date </label><input type="date" class="datepicker" id="datepicker1" >
   </div>
-  <div class="col s3 offset-s1">
+  <div class="col s2 offset-s1">
     <label>End date</label><input type="date" class="datepicker" id="datepicker2" >
   </div>
-  <button class="btn blue" (click)="getReport($event)">Download Excel report</button>
+  <div class="col s2 offset-s1">
+  <select class="browser-default" (change)="changeUser($event.target.value)">
+    <option>Choose user</option>
+    <option *ngFor="let user of users"  [value]="user.email">{{user.name}}</option>
+  </select></div>
+  <div class="col s3 offset-s1">
+  <button class="btn blue " (click)="getReport($event)"><i class="material-icons">play_for_work</i> Download report</button></div>
 </div>
 <div class="row">
   <div class="col s5">

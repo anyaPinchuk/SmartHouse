@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpModule, JsonpModule} from '@angular/http';
 
@@ -21,6 +21,7 @@ import {HouseService} from './shared/house.service';
 import {NewAccountComponent} from './new-account/new-account.component';
 import {DeviceManageComponent} from './device-manage/device-manage.component';
 import { ChartComponent } from './chart/chart.component';
+import {CustomErrorHandler} from './shared/error-handler';
 
 
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
@@ -48,7 +49,7 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
     JsonpModule,
     routing
   ],
-  providers: [DeviceService, SharedService, HouseService, User],
+  providers: [DeviceService, SharedService, HouseService, User, { provide: ErrorHandler, useClass: CustomErrorHandler } ],
   bootstrap: [AppComponent],
 })
 export class AppModule {

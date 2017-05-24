@@ -23,7 +23,8 @@ public class GlobalDefaultExceptionHandler {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public RedirectView notFoundPageHandler() {
+    public RedirectView notFoundPageHandler(NoHandlerFoundException e) {
+        LOG.error("Was thrown NoHandlerFoundException: " + e.getMessage());
         return new RedirectView("/");
     }
 
@@ -31,7 +32,7 @@ public class GlobalDefaultExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public String serviceExceptionHandler(ServiceException e) {
-        LOG.warn("Was thrown ServiceException: " + e);
+        LOG.warn("Was thrown ServiceException: " + e.getBusinessMessage());
         return e.getBusinessMessage();
     }
 

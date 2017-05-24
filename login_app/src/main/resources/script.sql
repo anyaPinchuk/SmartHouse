@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS `usersdb`.`device` (
 CREATE TABLE IF NOT EXISTS `usersdb`.`user` (
   `id_user` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `date_of_registration` DATE NOT NULL,
-  `login` VARCHAR(255) NOT NULL,
+  `login` VARCHAR(255) UNIQUE NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
   `role` VARCHAR(255) NOT NULL,
   `id_house` BIGINT(20) NULL DEFAULT NULL,
@@ -129,6 +130,6 @@ CREATE TABLE IF NOT EXISTS `usersdb`.`work_log` (
   ENGINE = InnoDB
   DEFAULT CHARACTER SET = utf8;
 
-INSERT INTO `usersdb`.`user` (`date_of_registration`, `login`, `password`, `role`)
-VALUES ('2017-05-05', 'anyapinchuk3@gmail.com', 'b59c67bf196a4758191e42f76670ceba',
+INSERT INTO `usersdb`.`user` (`date_of_registration`, `login`, `name`, `password`, `role`)
+VALUES ('2017-05-05', 'anyapinchuk3@gmail.com', 'Ann', 'b59c67bf196a4758191e42f76670ceba',
         'ROLE_ADMIN');

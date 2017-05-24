@@ -1,7 +1,7 @@
 package beans.controllers;
 
 import beans.services.DeviceService;
-import beans.services.ExcelService;
+import beans.services.ReportService;
 import beans.services.UserService;
 import dto.DeviceDTO;
 import dto.ImageDTO;
@@ -19,7 +19,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -35,7 +34,7 @@ import java.util.List;
 public class DeviceRESTController {
     private DeviceService deviceService;
     private UserService userService;
-    private ExcelService excelService;
+    private ReportService excelService;
     private Logger LOG = LoggerFactory.getLogger(DeviceRESTController.class);
 
     private SimpMessageSendingOperations messagingTemplate;
@@ -51,7 +50,7 @@ public class DeviceRESTController {
     }
 
     @Autowired
-    public void setExcelService(ExcelService excelService) {
+    public void setExcelService(ReportService excelService) {
         this.excelService = excelService;
     }
 
@@ -64,7 +63,7 @@ public class DeviceRESTController {
     @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getAll() {
-        LOG.info("handle post request by url /api/device/all");
+        LOG.info("handle get request by url /api/device/all");
         return ResponseEntity.ok(deviceService.getAll(null));
     }
 
@@ -87,30 +86,31 @@ public class DeviceRESTController {
     @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getByDate(@RequestParam String startDate,
-                                       @RequestParam String endDate) throws ParseException {
-        LOG.info("handle post request by url /api/device/getByDate");
+                                       @RequestParam String endDate, @RequestParam String user) throws ParseException {
+        LOG.info("handle get request by url /api/device/getByDate");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Timestamp start = new Timestamp(format.parse(startDate).getTime());
         Timestamp end = new Timestamp(format.parse(endDate).getTime());
-        return ResponseEntity.ok(deviceService.getByDateInterval(start, end));
+        return ResponseEntity.ok(deviceService.getByDateInterval(start, end, user));
     }
 
     @GetMapping("/getWorkLogs")
     @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getWorkLogs(@RequestParam String startDate,
-                                         @RequestParam String endDate) throws Exception {
-        LOG.info("handle post request by url /api/device/getWorkLogs");
+                                         @RequestParam String endDate, @RequestParam String user) throws Exception {
+        LOG.info("handle get request by url /api/device/getWorkLogs");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Timestamp start = new Timestamp(format.parse(startDate).getTime());
         Timestamp end = new Timestamp(format.parse(endDate).getTime());
-        List<WorkLogResult> workLogs = deviceService.getWorkLogsByDevice(start, end);
+        List<WorkLogResult> workLogs = deviceService.getWorkLogsByDevice(start, end, user);
         return ResponseEntity.ok(workLogs);
     }
 
     @GetMapping("/get")
     @PreAuthorize("hasRole('ROLE_OWNER')")
     public ResponseEntity<?> getByUser(@RequestParam String email) {
+        LOG.info("handle get request by url /api/device/get");
         if (!"".equals(email)) {
             return ResponseEntity.ok(deviceService.getAllByUser(email));
         } else return ResponseEntity.ok(new ArrayList<>());
@@ -147,11 +147,20 @@ public class DeviceRESTController {
         }
     }
 
-    @ResponseBody
-    @RequestMapping(method = RequestMethod.POST, value = "/image", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    public byte[] uploadCharts(@RequestBody ImageDTO imageDTO, HttpServletResponse response) throws Exception {
+    @RequestMapping(method = RequestMethod.POST, value = "/image")
+    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
+    public ResponseEntity<?> uploadCharts(@RequestBody ImageDTO imageDTO) throws Exception {
+        LOG.info("handle post request by url /api/device/image");
         String path = excelService.writeCharts(imageDTO);
-        InputStream inputStream = new FileInputStream(new File(path));
+        return ResponseEntity.ok(path);
+    }
+
+    @ResponseBody
+    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
+    @RequestMapping(method = RequestMethod.GET, value = "/report", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    public byte[] getReport(HttpServletResponse response) throws Exception {
+        LOG.info("handle get request by url /api/device/report");
+        InputStream inputStream = new FileInputStream(new File("D:\\report.xlsx"));
         response.setHeader("Content-Disposition", "attachment; filename=report.xlsx");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setCharacterEncoding("UTF-8");

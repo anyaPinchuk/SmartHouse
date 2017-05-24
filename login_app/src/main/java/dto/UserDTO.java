@@ -17,6 +17,10 @@ public class UserDTO {
     @Email(regexp = "^.+@.+\\.[a-z]{2,4}$")
     private String email;
 
+    @NotNull
+    @Size(max = 30, min = 2)
+    private String name;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Size(min = 4, max = 32)
     @NotNull
@@ -34,9 +38,10 @@ public class UserDTO {
         this.password = password;
     }
 
-    public UserDTO(Long id, String login, String password, Date dateOfRegistration, String role) {
+    public UserDTO(Long id, String login, String name, String password, Date dateOfRegistration, String role) {
         this.id = id;
         this.email = login;
+        this.name = name;
         this.password = password;
         this.dateOfRegistration = dateOfRegistration;
         this.role = role;
@@ -48,6 +53,14 @@ public class UserDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {

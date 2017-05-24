@@ -7,6 +7,7 @@ import java.sql.Date;
 public class User {
     private Long id;
     private String login;
+    private String name;
     private String password;
     private Date dateOfRegistration;
     private String role;
@@ -23,9 +24,10 @@ public class User {
         this.dateOfRegistration = new Date(System.currentTimeMillis());
     }
 
-    public User(Long id, String login, String password, Date dateOfRegistration, String role) {
+    public User(Long id, String name, String login, String password, Date dateOfRegistration, String role) {
         this.id = id;
         this.login = login;
+        this.name = name;
         this.password = password;
         this.dateOfRegistration = dateOfRegistration;
         this.role = role;
@@ -49,6 +51,15 @@ public class User {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    @Column(name = "name", nullable = false)
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Column(name = "password", nullable = false)

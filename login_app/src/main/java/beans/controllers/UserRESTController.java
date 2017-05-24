@@ -58,10 +58,19 @@ public class UserRESTController {
     @PreAuthorize("hasRole('ROLE_OWNER')")
     @GetMapping("/all")
     @SuppressWarnings("unchecked")
-    public ResponseEntity<?> getAll() {
-        LOG.info("handle post request by url /api/user/all");
+    public ResponseEntity<?> getUsers() {
+        LOG.info("handle get request by url /api/user/all");
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok(userService.findUsersByHouse(user.getSmartHouse()));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
+    @GetMapping("/allUsers")
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<?> getAllUsers() {
+        LOG.info("handle get request by url /api/user/allUsers");
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok(userService.findAllUsersByHouse(user.getSmartHouse()));
     }
 
     @GetMapping("/checkRights")

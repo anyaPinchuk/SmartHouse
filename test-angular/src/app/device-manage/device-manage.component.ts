@@ -44,7 +44,6 @@ export class DeviceManageComponent implements OnInit {
   }
 
   changeDevice(id) {
-    console.log(id);
     this.devices.forEach(device => {
       if (id === String(device.id)) {
         this.selectedDevice = device;

@@ -31,6 +31,10 @@ export class DeviceService {
     return this.http.get('api/user/all');
   }
 
+  getAllUsers(): any {
+    return this.http.get('api/user/allUsers');
+  }
+
   getDevicesByUser(user): any {
     return this.http.get('api/device/get?email=' + user.email);
   }
@@ -45,7 +49,9 @@ export class DeviceService {
     this.stompClient = Stomp.over(socket);
     this.stompClient.connect({}, function (frame) {
       that.isConnected = true;
-      that.stompClient.subscribe('/api/connect');
+      that.stompClient.subscribe('/api/connect', function (session) {
+        that.user.sessionID = session.body;
+      });
       that.stompClient.subscribe('/user/queue/updateDevices', function (devices) {
         that.ss.onMainEvent.emit(JSON.parse(devices.body));
       });
@@ -61,24 +67,17 @@ export class DeviceService {
 
   }
 
-
-  onConnect() {
-    this.stompClient.subscribe('/api/connect', function (id) {
-      this.user.sessionID = id.body;
-    });
-  }
-
   send(msg, url): any {
     this.stompClient.send(url, {}, msg);
     return this.stompClient;
   }
 
-  getDevicesByDateInterval(start, end): any {
-    return this.http.get('/api/device/getByDate?startDate=' + start + '&endDate=' + end);
+  getDevicesByDateInterval(start, end, user): any {
+    return this.http.get('/api/device/getByDate?startDate=' + start + '&endDate=' + end + '&user=' + user);
   }
 
-  getWorkLogsByDevice(startDate: string, endDate: string) {
-    return this.http.get('/api/device/getWorkLogs?startDate=' + startDate + '&endDate=' + endDate);
+  getWorkLogsByDevice(startDate: string, endDate: string, user) {
+    return this.http.get('/api/device/getWorkLogs?startDate=' + startDate + '&endDate=' + endDate + '&user=' + user);
   }
 
   exportImage(form: any) {

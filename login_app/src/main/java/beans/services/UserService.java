@@ -66,6 +66,7 @@ public class UserService {
         User user = new User(userDTO.getEmail(), DigestUtils.md5DigestAsHex(userDTO.getPassword().getBytes()));
         user.setSmartHouse(owner.getSmartHouse());
         user.setRole(userDTO.getRole());
+        user.setName(userDTO.getName());
         userRepository.save(user);
         return convertToDTO(user);
     }
@@ -78,6 +79,7 @@ public class UserService {
         User user = new User(userDTO.getEmail(), DigestUtils.md5DigestAsHex(userDTO.getPassword().getBytes()));
         user.setSmartHouse(houseRepository.findHouseByOwnerLogin(userDTO.getEmail()));
         user.setRole("ROLE_OWNER");
+        user.setName(userDTO.getName());
         userRepository.save(user);
         return convertToDTO(user);
     }
@@ -129,5 +131,14 @@ public class UserService {
     String getUniqueKey() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
+    }
+
+    public List<UserDTO> findAllUsersByHouse(House smartHouse) {
+        List<User> users = userRepository.findAllBySmartHouse(smartHouse);
+        List<UserDTO> userDTOS = new ArrayList<>();
+        if (users != null) {
+            users.forEach(obj -> userDTOS.add(convertToDTO(obj)));
+            return userDTOS;
+        } else return new ArrayList<>();
     }
 }

@@ -2,10 +2,9 @@ import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {DeviceService} from '../shared/device.service';
 import {Router} from '@angular/router';
 import {SharedService} from '../shared/shared.service';
-import {Device} from '../device/device';
 import {WorkLogResult} from '../shared/work-log-result';
 import {ChartService} from '../shared/chart.service';
-import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {User} from '../shared/user';
 
 @Component({
   selector: 'app-chart',
@@ -15,6 +14,8 @@ import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 export class ChartComponent implements OnInit, AfterViewInit {
 
   form = {};
+  selectedUser: User = null;
+  users: User[];
   startDate = '';
   endDate = '';
   workLogResults: WorkLogResult[];
@@ -26,17 +27,18 @@ export class ChartComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.buildBarCharts();
     this.buildPieCharts();
+    this.deviceService.getAllUsers().subscribe((data) => {
+      this.users = data.json();
+    });
   }
 
   constructor(private deviceService: DeviceService,
               private ss: SharedService,
-              private router: Router,
-              private fb: FormBuilder) {
+              private router: Router) {
 
   }
 
   ngOnInit() {
-    polyfill();
     this.ss.onMainEvent.emit(true);
     const that = this;
     const $input = $('#datepicker1').pickadate({
@@ -51,8 +53,10 @@ export class ChartComponent implements OnInit, AfterViewInit {
     }).on('change', function () {
       that.rebuild();
     });
+    let lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
     const picker = $input.pickadate('picker');
-    picker.set('select', new Date());
+    picker.set('select', lastMonth);
     const picker2 = $input2.pickadate('picker');
     picker2.set('select', new Date());
   }
@@ -71,7 +75,11 @@ export class ChartComponent implements OnInit, AfterViewInit {
       startEndDates.start.getDay() === startEndDates.end.getDay()) {
       return;
     }
-    this.deviceService.getWorkLogsByDevice(this.startDate, this.endDate).subscribe(
+    let email = '';
+    if (this.selectedUser !== null) {
+      email = this.selectedUser.email;
+    }
+    this.deviceService.getWorkLogsByDevice(this.startDate, this.endDate, email).subscribe(
       (data) => {
         this.workLogResults = data.json();
         if (this.workLogResults.length !== 0) {
@@ -79,6 +87,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
           this.barChartHours = ChartService.renderBarChartHours();
           this.workLogResults.forEach(obj => {
             let info = [0, 0, 0, 0, 0, 0, 0];
+            let hoursInfo = [0, 0, 0, 0, 0, 0, 0];
             const workLogs = obj.workLogList;
             workLogs.forEach(worklog => {
               const date = new Date(worklog.dateOfAction);
@@ -118,13 +127,19 @@ export class ChartComponent implements OnInit, AfterViewInit {
               data: info
             });
             for (let i = 0; i < info.length; i++) {
-              info[i] = Math.floor(info[i] / Number(obj.devicePower));
+              hoursInfo[i] = Math.floor(info[i] / Number(obj.devicePower));
             }
             this.barChartHours.addSeries({
               name: obj.deviceName,
-              data: info
+              data: hoursInfo
             });
           });
+        } else {
+          document.getElementById('pie1').innerText = ''; // works!
+          this.barChartEnergy = null;
+          this.barChartHours = null;
+          this.pieChartEnergy = null;
+          this.pieChartHours = null;
         }
       },
       (error) => {
@@ -158,7 +173,11 @@ export class ChartComponent implements OnInit, AfterViewInit {
       startEndDates.start.getDay() === startEndDates.end.getDay()) {
       return;
     }
-    this.deviceService.getDevicesByDateInterval(this.startDate, this.endDate).subscribe(
+    let email = '';
+    if (this.selectedUser !== null) {
+      email = this.selectedUser.email;
+    }
+    this.deviceService.getDevicesByDateInterval(this.startDate, this.endDate, email).subscribe(
       (data) => {
         const devices = data.json();
         const info = [];
@@ -187,6 +206,14 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
   getReport(event) {
+    const startEndDates = this.getDates();
+    if (startEndDates.start > startEndDates.end) {
+      notify('Wrong date interval');
+      return;
+    } else if (startEndDates.start.getMonth() === startEndDates.end.getMonth() &&
+      startEndDates.start.getDay() === startEndDates.end.getDay()) {
+      return;
+    }
     const svgBarHours = this.barChartHours.getSVG({
       exporting: {
         sourceWidth: this.barChartHours.chartWidth,
@@ -212,7 +239,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
       }
     });
     const that = this;
-    const render_width = 600;
+    const render_width = 500;
     const render_height = render_width * this.barChartHours.chartHeight / this.barChartHours.chartWidth;
     const arr = [];
     const promises = [];
@@ -230,20 +257,33 @@ export class ChartComponent implements OnInit, AfterViewInit {
     });
     Promise.all(promises).then(function (results) {
       that.deviceService.exportImage({
-        barChartHours: results[0].toDataURL(),
-        barChartEnergy: results[1].toDataURL(),
+        startDate: that.startDate,
+        endDate: that.endDate,
+        pieChartEnergy: results[3].toDataURL(),
         pieChartHours: results[2].toDataURL(),
-        pieChartEnergy: results[3].toDataURL()
+        barChartHours: results[0].toDataURL(),
+        barChartEnergy: results[1].toDataURL()
       }).subscribe(data => {
-        const file = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        const blob = new Blob([(<any>data)], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        const url = window.URL.createObjectURL(blob);
-        window.open(url);
-        // window.open(fileURL);
+        window.open('/api/device/report', '_blank');
       });
     });
   }
+
+  changeUser(email) {
+    if (email === 'Choose user') {
+      this.selectedUser = null;
+    } else {
+      this.users.forEach(user => {
+        if (email === String(user.email)) {
+          this.selectedUser = user;
+        }
+      });
+    }
+    this.rebuild();
+  }
 }
+
+
 function loadImage(canvas, render_width, render_height, svgBarHours) {
   return new Promise(function (resolve, reject) {
     const image = new Image();
@@ -257,31 +297,9 @@ function loadImage(canvas, render_width, render_height, svgBarHours) {
     };
   });
 }
-function _dataURLtoBlob(dataUrl) {
-  const arr = dataUrl.split(',');
-  const mime = arr[0].match(/:(.*?);/)[1];
-  const bString = atob(arr[1]);
-  let n = bString.length;
-  const u8arr = new Uint8Array(n);
-
-  while (n--) {
-    u8arr[n] = bString.charCodeAt(n);
-  }
-  return new Blob([u8arr], {type: mime});
-}
 
 function notify(msg) {
   Materialize.toast(msg, 4000);
 }
 
-function polyfill() {
-  if (!HTMLCanvasElement.prototype.toBlob) {
-    HTMLCanvasElement.prototype.toBlob = function (callback) {
-      if (!callback) {
-        throw new Error('callback is required');
-      }
-      callback.call(this, HTMLCanvasElement.prototype.msToBlob ?
-        this.msToBlob() : _dataURLtoBlob(this.toDataURL()));
-    };
-  }
-}
+

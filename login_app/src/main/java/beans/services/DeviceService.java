@@ -5,25 +5,21 @@ import dto.DeviceDTO;
 import dto.WorkLogResult;
 import entities.*;
 import exceptions.ServiceException;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import repository.*;
 
-import java.io.FileOutputStream;
 import java.security.Principal;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class DeviceService {
 
-    private ExcelService excelService;
+    private ReportService excelService;
     private DeviceRepository deviceRepository;
     private HouseRepository houseRepository;
     private WorkLogRepository workLogRepository;
@@ -59,7 +55,7 @@ public class DeviceService {
     }
 
     @Autowired
-    public void setExcelService(ExcelService excelService) {
+    public void setExcelService(ReportService excelService) {
         this.excelService = excelService;
     }
 
@@ -180,13 +176,17 @@ public class DeviceService {
         return iterateOverDevices(devices, user);
     }
 
-    public List<DeviceDTO> getByDateInterval(Timestamp startDate, Timestamp endDate) {
+    public List<DeviceDTO> getByDateInterval(Timestamp startDate, Timestamp endDate, String email) {
         House house = getHouse();
+        User user = userRepository.findUserByLogin(email);
         List<Device> devices = deviceRepository.findAllBySmartHouse(house);
         List<DeviceDTO> deviceDTOS = new ArrayList<>();
         devices.forEach(device -> {
-            List<WorkLog> logs = workLogRepository.findAllByDateOfActionIsBetweenAndActionAndDevice(
-                    startDate, endDate, device.getId());
+            List<WorkLog> logs;
+            if (user == null)
+                logs = workLogRepository.findAllByDateOfActionIsBetweenAndDevice(startDate, endDate, device.getId());
+            else
+                logs = workLogRepository.findAllByDateOfActionIsBetweenAndDeviceAndUserId(startDate, endDate, device.getId(), user.getId());
             DeviceDTO dto = toDTO(device);
             logs.forEach(log -> {
                 Long result = Long.valueOf(log.getConsumedEnergy());
@@ -200,12 +200,17 @@ public class DeviceService {
         return deviceDTOS;
     }
 
-    public List<WorkLogResult> getWorkLogsByDevice(Timestamp start, Timestamp end) throws Exception {
+    public List<WorkLogResult> getWorkLogsByDevice(Timestamp start, Timestamp end, String email) throws Exception {
         House house = getHouse();
+        User user = userRepository.findUserByLogin(email);
         List<Device> devices = deviceRepository.findAllBySmartHouse(house);
-        List<WorkLog> workLogs = workLogRepository.findAllByDateOfActionBetweenAndActionAndDevice(start, end, house.getId());
+        List<WorkLog> workLogs;
+        if (user == null)
+            workLogs = workLogRepository.findAllByDateOfActionBetweenAndDevice(start, end, house.getId());
+        else
+            workLogs = workLogRepository.findAllByDateOfActionBetweenAndDeviceAndUserId(start, end, house.getId(), user.getId());
         List<WorkLogResult> workLogResults = new ArrayList<>();
-        excelService.writeStatistic(workLogs);
+        excelService.writeStatistics(workLogs);
         devices.forEach(device -> {
             List<WorkLog> workLogList = workLogs.stream()
                     .filter(workLog -> workLog.getDevice().getId().equals(device.getId()))

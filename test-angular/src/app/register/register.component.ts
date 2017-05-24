@@ -23,7 +23,8 @@ export class RegisterComponent implements OnInit {
               private router: Router,
               private ss: SharedService) {
     this.regForm = this.fb.group({
-      email: ['', Validators.required, Validators.pattern('[a-zA-Z_]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}')],
+      email: ['', Validators.required],
+      name: ['', Validators.required],
       password: ['', Validators.required],
       role: ['ROLE_ADULT']
     });
@@ -36,6 +37,9 @@ export class RegisterComponent implements OnInit {
       return;
     } else if (form.email === '') {
       this.errorMsg = 'Field email can not be empty';
+      return;
+    } else if (form.name === '') {
+      this.errorMsg = 'Field name can not be empty';
       return;
     } else if (form.password === '') {
       this.errorMsg = 'Field password can not be empty';

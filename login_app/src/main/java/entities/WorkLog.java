@@ -1,7 +1,5 @@
 package entities;
 
-import org.hibernate.sql.Select;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
 

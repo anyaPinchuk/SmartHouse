@@ -3,10 +3,28 @@ package dto;
 import java.io.Serializable;
 
 public class ImageDTO implements Serializable{
+    private String startDate;
+    private String endDate;
     private String barChartHours;
     private String barChartEnergy;
     private String pieChartHours;
     private String pieChartEnergy;
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
 
     public String getBarChartHours() {
         return barChartHours;
