@@ -11,7 +11,7 @@ import {User} from '../shared/user';
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.css']
 })
-export class ChartComponent implements OnInit, AfterViewInit {
+export class ChartComponent implements OnInit {
 
   form = {};
   selectedUser: User = null;
@@ -24,14 +24,6 @@ export class ChartComponent implements OnInit, AfterViewInit {
   pieChartEnergy: any;
   pieChartHours: any;
 
-  ngAfterViewInit() {
-    this.buildBarCharts();
-    this.buildPieCharts();
-    this.deviceService.getAllUsers().subscribe((data) => {
-      this.users = data.json();
-    });
-  }
-
   constructor(private deviceService: DeviceService,
               private ss: SharedService,
               private router: Router) {
@@ -40,18 +32,23 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.ss.onMainEvent.emit(true);
+    this.deviceService.getAllUsers().subscribe((data) => {
+      this.users = data.json();
+    });
     const that = this;
     const $input = $('#datepicker1').pickadate({
       selectMonths: true,
       selectYears: 15,
     }).on('change', function () {
       that.rebuild();
+      that.buildSplineChart();
     });
     const $input2 = $('#datepicker2').pickadate({
       selectMonths: true,
       selectYears: 15,
     }).on('change', function () {
       that.rebuild();
+      that.buildSplineChart();
     });
     let lastMonth = new Date();
     lastMonth.setMonth(lastMonth.getMonth() - 1);
@@ -62,11 +59,6 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
   rebuild() {
-    this.buildPieCharts();
-    this.buildBarCharts();
-  }
-
-  buildBarCharts() {
     const startEndDates = this.getDates();
     if (startEndDates.start > startEndDates.end) {
       notify('Wrong date interval');
@@ -75,6 +67,11 @@ export class ChartComponent implements OnInit, AfterViewInit {
       startEndDates.start.getDay() === startEndDates.end.getDay()) {
       return;
     }
+    this.buildPieCharts();
+    this.buildBarCharts();
+  }
+
+  buildBarCharts() {
     let email = '';
     if (this.selectedUser !== null) {
       email = this.selectedUser.email;
@@ -168,14 +165,6 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
   buildPieCharts() {
-    const startEndDates = this.getDates();
-    if (startEndDates.start > startEndDates.end) {
-      notify('Wrong date interval');
-      return;
-    } else if (startEndDates.start.getMonth() === startEndDates.end.getMonth() &&
-      startEndDates.start.getDay() === startEndDates.end.getDay()) {
-      return;
-    }
     let email = '';
     if (this.selectedUser !== null) {
       email = this.selectedUser.email;
@@ -283,6 +272,57 @@ export class ChartComponent implements OnInit, AfterViewInit {
       });
     }
     this.rebuild();
+  }
+
+  buildSplineChart() {
+    if (this.users === []) {
+      return;
+    }
+    this.deviceService.getUserWorkLogs(this.startDate, this.endDate).subscribe((data) => {
+      const workLogs = data.json();
+      const chart = ChartService.renderSplineChart();
+      const categoryArr = [];
+      workLogs.forEach(workLog => {
+        workLog.dateOfAction = new Date(workLog.dateOfAction);
+        if (categoryArr.indexOf(workLog.dateOfAction) === -1) {
+          categoryArr.push(workLog.dateOfAction);
+        }
+      });
+
+      this.users.forEach(user => {
+        const info = [];
+        const temp = [];
+        workLogs.forEach(workLog => {
+          if (user.email === workLog.user.login) {
+            temp.push(workLog);
+          }
+        });
+        console.log(temp);
+        categoryArr.forEach(category => {
+          let flag = false;
+          let tempLog = null;
+          temp.forEach(workLog => {
+            if (workLog.dateOfAction === category) {
+              flag = true;
+              tempLog = workLog;
+            }
+          });
+          if (flag) {
+            info.push(Number(tempLog.consumedEnergy));
+          } else {
+            info.push(0);
+          }
+        });
+        chart.addSeries({
+          name: user.name,
+          data: info
+        });
+      });
+      for (let i = 0; i < categoryArr.length; i++) {
+        categoryArr[i] = categoryArr[i].getDate() + '.' + Number(categoryArr[i].getMonth() + 1) + '.' + categoryArr[i].getFullYear();
+      }
+      chart.xAxis[0].setCategories(categoryArr);
+    });
   }
 }
 

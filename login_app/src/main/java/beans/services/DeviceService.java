@@ -230,4 +230,13 @@ public class DeviceService {
     }
 
 
+    public List<WorkLog> getUserWorkLogs(Timestamp start, Timestamp end) {
+        House house = getHouse();
+        List<WorkLog> workLogs = workLogRepository.findAllByDateOfActionBetween(start, end, house.getId());
+        workLogs.forEach(workLog -> {
+            workLog.setDevice(null);
+            workLog.getUser().setSmartHouse(null);
+        });
+        return workLogs;
+    }
 }

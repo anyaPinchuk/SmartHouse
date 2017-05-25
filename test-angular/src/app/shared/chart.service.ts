@@ -190,4 +190,40 @@ export class ChartService {
     });
   }
 
+  static renderSplineChart() {
+     return Highcharts.chart('spline', {
+      chart: {
+        type: 'spline'
+      },
+      title: {
+        text: 'Total consumption of energy'
+      },
+      xAxis: {
+      },
+      yAxis: {
+        title: {
+          text: 'Power'
+        },
+        labels: {
+          formatter: function () {
+            return this.value + 'W';
+          }
+        }
+      },
+      tooltip: {
+        crosshairs: true,
+        shared: true
+      },
+      plotOptions: {
+        spline: {
+          marker: {
+            radius: 4,
+            lineColor: '#666666',
+            lineWidth: 1
+          }
+        }
+      }
+    });
+  }
+
 }

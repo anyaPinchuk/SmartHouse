@@ -80,6 +80,10 @@ export class DeviceService {
     return this.http.get('/api/device/getWorkLogs?startDate=' + startDate + '&endDate=' + endDate + '&user=' + user);
   }
 
+  getUserWorkLogs(startDate: string, endDate: string) {
+    return this.http.get('/api/device/getUserWorkLogs?startDate=' + startDate + '&endDate=' + endDate);
+  }
+
   exportImage(form: any) {
     return this.http.post('/api/device/image', form);
   }

@@ -8,6 +8,7 @@ import dto.ImageDTO;
 import dto.WorkLogResult;
 import entities.Device;
 import entities.User;
+import entities.WorkLog;
 import org.apache.poi.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,6 +105,19 @@ public class DeviceRESTController {
         Timestamp start = new Timestamp(format.parse(startDate).getTime());
         Timestamp end = new Timestamp(format.parse(endDate).getTime());
         List<WorkLogResult> workLogs = deviceService.getWorkLogsByDevice(start, end, user);
+        return ResponseEntity.ok(workLogs);
+    }
+
+    @GetMapping("/getUserWorkLogs")
+    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<?> getAllUserWorkLogs(@RequestParam String startDate,
+                                         @RequestParam String endDate) throws Exception {
+        LOG.info("handle get request by url /api/device/getUserWorkLogs");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Timestamp start = new Timestamp(format.parse(startDate).getTime());
+        Timestamp end = new Timestamp(format.parse(endDate).getTime());
+        List<WorkLog> workLogs = deviceService.getUserWorkLogs(start, end);
         return ResponseEntity.ok(workLogs);
     }
 
