@@ -5,12 +5,12 @@
         <div class="col s6 offset-s1">
           <h3>{{device?.name}}</h3>
           <p *ngIf="device.model">Model: {{device?.model}}</p>
-          <p>Power: {{device?.power}} {{device?.powerUnit}} W</p>
+          <p>{{'DEVICE.POWER' | translate}}: {{device?.power}} {{device?.powerUnit}} W</p>
         </div>
         <div class="col s3 pull-s1">
           <p *ngIf="device.startTime">From {{device.startTime}}</p>
           <p *ngIf="device.endTime">To {{device.endTime}}</p>
-          <p *ngIf="device.hours">During {{device.hours}} hour(s)</p>
+          <p *ngIf="device.hours">{{'INFO.DURING' | translate}} {{device.hours}} {{'INFO.HOURS' | translate}}</p>
         </div>
         <div class="switch col s2 pull-s1">
           <label>

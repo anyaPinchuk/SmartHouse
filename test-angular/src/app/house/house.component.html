@@ -3,9 +3,9 @@
     <a *ngFor="let house of houses" class="collection-item blue-text">
       <div class="row">
         <div class="col s9 offset-s1">
-          <h4>Address: {{house?.country}}, {{house?.city}}, {{house?.street}}, {{house?.house}} {{house?.flat}}</h4>
-          <p>Owner: {{house?.ownerLogin}}</p>
-          <a class="waves-effect waves-light btn blue" href="api/user/sendConfirm?email={{house.ownerLogin}}">Send confirmation</a>
+          <h4>{{'HOUSE.ADDRESS' | translate}}: {{house?.country}}, {{house?.city}}, {{house?.street}}, {{house?.house}} {{house?.flat}}</h4>
+          <p>{{'USER.OWNER' | translate}}: {{house?.ownerLogin}}</p>
+          <a class="waves-effect waves-light btn blue" href="api/user/sendConfirm?email={{house.ownerLogin}}">{{'BUTTON.SEND' | translate}}</a>
         </div>
       </div>
     </a>

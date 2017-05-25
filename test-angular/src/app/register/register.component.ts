@@ -16,6 +16,7 @@ export class RegisterComponent implements OnInit {
   errorMsg = '';
 
   ngOnInit() {
+    this.ss.onMainEvent.emit(true);
   }
 
   constructor(public fb: FormBuilder,

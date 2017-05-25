@@ -3,24 +3,24 @@
     <div class="row">
       <div class="input-field col s12">
         <input formControlName="name" type="text"  name="name" min="4" max="30" id="name" class="validate border-bottom">
-        <label for="name">Name</label>
+        <label for="name">{{'DEVICE.NAME' | translate}}</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
         <input formControlName="model" type="text" min="4" max="30"  name="model" id="model" class="validate border-bottom">
-        <label for="model">Model</label>
+        <label for="model">{{'DEVICE.MODEL' | translate}}</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
         <input formControlName="power" type="number" name="power"  id="power" class="validate border-bottom">
-        <label for="power">Power, W</label>
+        <label for="power">{{'DEVICE.POWER' | translate}}, W</label>
       </div>
     </div>
     <p class="red-text center">{{errorMsg}}</p>
     <div class="center">
-      <button class="waves-effect waves-light btn blue" id="loginBtn" type="submit">Add device</button>
+      <button class="waves-effect waves-light btn blue" id="loginBtn" type="submit">{{'DEVICE.ADD' | translate}}</button>
     </div>
   </form>
 </div>

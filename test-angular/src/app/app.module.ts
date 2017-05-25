@@ -1,7 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {HttpModule, JsonpModule} from '@angular/http';
+import {Http, HttpModule, JsonpModule} from '@angular/http';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './login/login.component';
@@ -22,6 +22,7 @@ import {NewAccountComponent} from './new-account/new-account.component';
 import {DeviceManageComponent} from './device-manage/device-manage.component';
 import { ChartComponent } from './chart/chart.component';
 import {CustomErrorHandler} from './shared/error-handler';
+import {TranslateLoader, TranslateModule, TranslateStaticLoader} from 'ng2-translate';
 
 
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
@@ -45,6 +46,11 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
     ReactiveFormsModule,
     FormsModule,
     HttpModule,
+    TranslateModule.forRoot({
+      provide: TranslateLoader,
+      useFactory: (createTranslateLoader),
+      deps: [Http]
+    }),
     RouterModule,
     JsonpModule,
     routing
@@ -53,4 +59,7 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
   bootstrap: [AppComponent],
 })
 export class AppModule {
+}
+export function createTranslateLoader(http: Http) {
+  return new TranslateStaticLoader(http, './assets/i18n', '.json');
 }

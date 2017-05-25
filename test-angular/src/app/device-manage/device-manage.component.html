@@ -2,9 +2,9 @@
   <div class="collection col s10 offset-s1">
     <a *ngFor="let user of users" class="collection-item blue-text"  (click)="selectUser(user)">
       <h3>Email: {{user.email}}</h3>
-      <h4>Role: {{user.role | slice:5}}</h4>
-      <p>Date of registration: {{user.dateOfRegistration | date:'dd.MM.y'}}</p>
-      <button class="btn" id="openModalBtn" data-target="modal">Manage</button>
+      <h4>{{'USER.ROLE' | translate}}: {{user.role | slice:5}}</h4>
+      <p>{{'USER.REGISTRATION' | translate}}: {{user.dateOfRegistration | date:'dd.MM.y'}}</p>
+      <button class="btn" id="openModalBtn" data-target="modal">{{'BUTTON.MANAGE' | translate}}</button>
     </a>
   </div>
 </div>
@@ -16,20 +16,20 @@
         {{device?.model}}
       </option>
     </select><br>
-    <input type="checkbox" [checked]="selectedDevice.secured" id="test" [(ngModel)]="selectedDevice.secured"> <label for="test">To
-    secure</label><br>
+    <input type="checkbox" [checked]="selectedDevice.secured" id="test" [(ngModel)]="selectedDevice.secured">
+    <label for="test">{{'INFO.FORBID' | translate}}</label><br>
     <input type="text" (change)="changeInput('startTime', startTime)" [(ngModel)]="selectedDevice.startTime" *ngIf="!selectedDevice.secured"
-           placeholder="HH:MM" #startTime> <label
-    *ngIf="!selectedDevice.secured">Start time</label>
+           placeholder="HH:MM" #startTime>
+    <label *ngIf="!selectedDevice.secured">{{'INFO.START' | translate}}</label>
     <input type="text" (change)="changeInput('endTime',endTime)" [(ngModel)]="selectedDevice.endTime" *ngIf="!selectedDevice.secured"
            placeholder="HH:MM" #endTime> <label
-    *ngIf="!selectedDevice.secured">End time </label><p class="red-text center">{{errorMsg}}</p>
+    *ngIf="!selectedDevice.secured">{{'INFO.END' | translate}} </label><p class="red-text center">{{errorMsg}}</p>
     <input type="number" (change)="changeInput('hours',hours)" [(ngModel)]="selectedDevice.hours" *ngIf="!selectedDevice.secured"
            placeholder="Input hours" #hours><label
-    *ngIf="!selectedDevice.secured">Hours </label>
+    *ngIf="!selectedDevice.secured">{{'INFO.HOURS' | translate}}</label>
   </div>
 
   <div class="modal-footer">
-    <a class="modal-action modal-close waves-effect waves-green btn-flat" (click)="saveChanges($event)">Save</a>
+    <a class="modal-action modal-close waves-effect waves-green btn-flat" (click)="saveChanges($event)">{{'INFO.SAVE' | translate}}</a>
   </div>
 </div>

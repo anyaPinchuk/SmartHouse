@@ -135,7 +135,10 @@ export class ChartComponent implements OnInit, AfterViewInit {
             });
           });
         } else {
-          document.getElementById('pie1').innerText = ''; // works!
+          document.getElementById('pie1').innerText = '';
+          document.getElementById('pie2').innerText = '';
+          document.getElementById('pie3').innerText = '';
+          document.getElementById('pie4').innerText = '';
           this.barChartEnergy = null;
           this.barChartHours = null;
           this.pieChartEnergy = null;

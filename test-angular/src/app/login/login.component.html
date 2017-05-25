@@ -14,12 +14,12 @@
       <div class="input-field col s12">
         <input formControlName="password" type="password" min="4" max="30" name="password" id="password"
                class="validate border-bottom" required>
-        <label for="password">Password</label>
+        <label for="password">{{'USER.PASSWORD' | translate}}</label>
       </div>
     </div>
     <p class="red-text center">{{errorMsg}}</p>
     <div class="col s4 offset-s4">
-      <button class="waves-effect waves-light btn blue" id="loginBtn" type="submit">Log in</button>
+      <button class="waves-effect waves-light btn blue" id="loginBtn" type="submit">{{'INFO.LOGIN' | translate}}</button>
     </div>
   </form>
 </div>

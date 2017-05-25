@@ -11,16 +11,9 @@
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="name"  type="text" name="name" id="name"
-               class="validate border-bottom" min="2" max="30" required>
-        <label data-error="wrong" data-success="right" for="name">Name</label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="input-field col s12">
         <input formControlName="password" type="password" name="password" id="password" class="validate border-bottom"
                min="4" max="30" required>
-        <label for="password">Password</label>
+        <label for="password">{{'USER.PASSWORD' | translate}}</label>
       </div>
     </div>
     <p class="red-text center">{{errorMsg}}</p>
@@ -39,7 +32,7 @@
       </div>
     </div><br>
     <div class="row">
-      <button class="waves-effect waves-light btn blue col s4 offset-s4" id="regBtn" type="submit">Sign up</button>
+      <button class="waves-effect waves-light btn blue col s5 offset-s3" id="regBtn" type="submit">{{'INFO.SIGNUP' | translate}}</button>
     </div>
   </form>
 </div>

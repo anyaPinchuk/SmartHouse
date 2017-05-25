@@ -1,0 +1,51 @@
+{
+  "INFO": {
+    "TITLE": "Smart house",
+    "LOGIN": "Log in",
+    "LOGOUT": "Log out",
+    "SAVE": "Save",
+    "SIGNUP" : "Sign up",
+    "FORBID" : "Forbid",
+    "START" : "Start time",
+    "END" : "End time",
+    "HOURS" : "Hour(s)",
+    "DOWNLOAD" : "Download report",
+    "START_DATE" : "Start date",
+    "END_DATE" : "End date",
+    "DURING" : "During",
+    "CHOOSE_USER" : "Choose user"
+  },
+  "LANG": {
+    "RU": "Russian",
+    "EN": "English"
+  },
+  "DEVICE": {
+    "NAME": "Name",
+    "MODEL": "Model",
+    "ADD": "Add device",
+    "POWER": "Power"
+  },
+  "USER": {
+    "PASSWORD": "Password",
+    "LOGIN": "Login",
+    "ROLE": "Role",
+    "NAME": "Name",
+    "OWNER" : "Owner",
+    "ADULT" : "Adult",
+    "GUEST" : "Guest",
+    "CHILD" : "Child",
+    "REGISTRATION" : "Date of registration"
+  },
+  "BUTTON" : {
+    "MANAGE" : "Manage user",
+    "HOUSE" : "Add house",
+    "CONFIRM" : "Confirm password",
+    "SEND" : "Send confirmation"
+  },
+  "COUNTRY" : "Country",
+  "STREET" : "Street",
+  "HOUSE" : "House",
+  "FLAT" : "Flat",
+  "CITY" : "City",
+  "ADDRESS" : "Address"
+}

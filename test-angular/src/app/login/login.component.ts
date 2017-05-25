@@ -14,11 +14,11 @@ export class LoginComponent implements OnInit {
   errorMsg = '';
 
   ngOnInit() {
+    this.ss.onMainEvent.emit(true);
   }
 
   constructor(public fb: FormBuilder,
               private route: ActivatedRoute,
-              private router: Router,
               private http: Http,
               private ss: SharedService) {
     this.loginForm = this.fb.group({

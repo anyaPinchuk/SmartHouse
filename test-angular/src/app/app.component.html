@@ -1,9 +1,14 @@
 <nav class="margin_bottom">
   <div class="nav-wrapper blue">
-    <a class="brand-logo" [routerLink]="['/']">Smart house</a>
+    <a class="brand-logo" [routerLink]="['/']">{{'INFO.TITLE' | translate}}</a>
     <ul id="nav-mobile" class="right hide-on-med-and-down">
-      <li *ngIf="!isAuthorized"><a [routerLink]="['/login']">Log in</a></li>
-      <li *ngIf="isAuthorized"><a href="api/logout">Log out</a></li>
+      <li><a class='dropdown-button btn blue' data-activates='dropdown1'>{{currentLang}}</a>
+        <ul id='dropdown1' class='dropdown-content'>
+          <li (click)="changeLocale('RU')">{{'LANG.RU' | translate}}</li>
+          <li (click)="changeLocale('EN')">{{'LANG.EN' | translate}}</li>
+        </ul></li>
+      <li *ngIf="!isAuthorized"><a [routerLink]="['/login']">{{'INFO.LOGIN' | translate}}</a></li>
+      <li *ngIf="isAuthorized"><a href="api/logout">{{'INFO.LOGOUT' | translate}}</a></li>
     </ul>
   </div>
 </nav>
