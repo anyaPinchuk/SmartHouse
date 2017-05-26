@@ -107,7 +107,7 @@ public class DeviceService {
         workLog.setDateOfAction(new Timestamp(System.currentTimeMillis()));
         if ("off".equalsIgnoreCase(deviceDTO.getState())) {
             workLog.setConsumedEnergy(String.valueOf(countConsumedEnergy(device)));
-            workLog.setCost(Double.valueOf(workLog.getConsumedEnergy()) * COST_PER_ONE_WATT + "");
+            workLog.setCost(String.format("%.3f", Double.valueOf(workLog.getConsumedEnergy()) * COST_PER_ONE_WATT));
             workLog.setHoursOfWork(Long.valueOf(workLog.getConsumedEnergy()) / Long.valueOf(device.getPower()) + "");
         }
         workLogRepository.save(workLog);

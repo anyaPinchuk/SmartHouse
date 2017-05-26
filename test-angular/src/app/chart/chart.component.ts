@@ -23,6 +23,7 @@ export class ChartComponent implements OnInit {
   barChartHours: any;
   pieChartEnergy: any;
   pieChartHours: any;
+  splineChart: any;
 
   constructor(private deviceService: DeviceService,
               private ss: SharedService,
@@ -230,23 +231,30 @@ export class ChartComponent implements OnInit {
         sourceHeight: this.pieChartEnergy.chartHeight
       }
     });
+    const splineChart = this.splineChart.getSVG({
+      exporting: {
+        sourceWidth: this.splineChart.chartWidth,
+        sourceHeight: this.splineChart.chartHeight
+      }
+    });
     const that = this;
     const render_width = 500;
     const render_height = render_width * this.barChartHours.chartHeight / this.barChartHours.chartWidth;
     const arr = [];
     const promises = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       const canvas = document.createElement('canvas');
       canvas.height = render_height;
       canvas.width = render_width;
       arr.push(canvas);
     }
-    const arraySVG = [svgBarHours, svgBarEnergy, svgPieEnergy, svgPieHours];
+    const arraySVG = [svgBarHours, svgBarEnergy, svgPieEnergy, svgPieHours, splineChart];
     let i = 0;
     arr.forEach(canvas => {
       promises.push(loadImage(canvas, render_width, render_height, arraySVG[i]));
       i++;
     });
+    const userName = this.selectedUser === null ? '' : this.selectedUser.name;
     Promise.all(promises).then(function (results) {
       that.deviceService.exportImage({
         startDate: that.startDate,
@@ -254,7 +262,9 @@ export class ChartComponent implements OnInit {
         pieChartEnergy: results[3].toDataURL(),
         pieChartHours: results[2].toDataURL(),
         barChartHours: results[0].toDataURL(),
-        barChartEnergy: results[1].toDataURL()
+        barChartEnergy: results[1].toDataURL(),
+        splineChart: results[4].toDataURL(),
+        userName: userName
       }).subscribe(data => {
         window.open('/api/device/report', '_blank');
       });
@@ -280,7 +290,7 @@ export class ChartComponent implements OnInit {
     }
     this.deviceService.getUserWorkLogs(this.startDate, this.endDate).subscribe((data) => {
       const workLogs = data.json();
-      const chart = ChartService.renderSplineChart();
+      this.splineChart = ChartService.renderSplineChart();
       const categoryArr = [];
       workLogs.forEach(workLog => {
         workLog.dateOfAction = new Date(workLog.dateOfAction);
@@ -297,7 +307,6 @@ export class ChartComponent implements OnInit {
             temp.push(workLog);
           }
         });
-        console.log(temp);
         categoryArr.forEach(category => {
           let flag = false;
           let tempLog = null;
@@ -313,7 +322,7 @@ export class ChartComponent implements OnInit {
             info.push(0);
           }
         });
-        chart.addSeries({
+        this.splineChart.addSeries({
           name: user.name,
           data: info
         });
@@ -321,16 +330,16 @@ export class ChartComponent implements OnInit {
       for (let i = 0; i < categoryArr.length; i++) {
         categoryArr[i] = categoryArr[i].getDate() + '.' + Number(categoryArr[i].getMonth() + 1) + '.' + categoryArr[i].getFullYear();
       }
-      chart.xAxis[0].setCategories(categoryArr);
+      this.splineChart.xAxis[0].setCategories(categoryArr);
     });
   }
 }
 
 
-function loadImage(canvas, render_width, render_height, svgBarHours) {
+function loadImage(canvas, render_width, render_height, svg) {
   return new Promise(function (resolve, reject) {
     const image = new Image();
-    image.src = 'data:image/svg+xml;base64,' + window.btoa(svgBarHours);
+    image.src = 'data:image/svg+xml;base64,' + window.btoa(svg);
     image.onload = function () {
       canvas.getContext('2d').drawImage(this, 0, 0, render_width, render_height);
       resolve(canvas);

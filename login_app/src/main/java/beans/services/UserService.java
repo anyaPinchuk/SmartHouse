@@ -52,7 +52,7 @@ public class UserService {
         this.emailRepository = emailRepository;
     }
 
-    private UserDTO convertToDTO(User owner) {
+    public UserDTO convertToDTO(User owner) {
         if (owner == null) return null;
         return converter.toDTO(owner).orElseThrow(() -> new ServiceException("user wasn't converted"));
     }
@@ -61,8 +61,8 @@ public class UserService {
         return userRepository.findUserByLogin(username);
     }
 
-    public UserDTO addNewAccount(UserDTO userDTO) {
-        User owner = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public UserDTO addUserByOwner(UserDTO userDTO) {
+        User owner = getAuthUser();
         User user = new User(userDTO.getEmail(), DigestUtils.md5DigestAsHex(userDTO.getPassword().getBytes()));
         user.setSmartHouse(owner.getSmartHouse());
         user.setRole(userDTO.getRole());
@@ -71,11 +71,16 @@ public class UserService {
         return convertToDTO(user);
     }
 
+    public User getAuthUser(){
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+
     public boolean checkUsernameForExisting(String username) {
         return username != null && userRepository.findUserByLogin(username) != null;
     }
 
-    public UserDTO createUserFromEmail(UserDTO userDTO) {
+    public UserDTO createOwner(UserDTO userDTO) {
         User user = new User(userDTO.getEmail(), DigestUtils.md5DigestAsHex(userDTO.getPassword().getBytes()));
         user.setSmartHouse(houseRepository.findHouseByOwnerLogin(userDTO.getEmail()));
         user.setRole("ROLE_OWNER");
@@ -88,8 +93,8 @@ public class UserService {
         return emailRepository.save(userEmail);
     }
 
-    public String findEmailByKey(String token) {
-        return token != null ? emailRepository.findByKey(token).getEmail() : null;
+    public String findEmailByKey(String key) {
+        return key != null ? emailRepository.findByKey(key).getEmail() : null;
     }
 
     public boolean checkKeyForExisting(String key) {
@@ -119,7 +124,7 @@ public class UserService {
         } else return new ArrayList<>();
     }
 
-    public void sendConfirm(String email) {
+    public void sendConfirmation(String email) {
         UserEmail userEmail = emailRepository.findByEmail(email);
         if (userEmail != null) {
             userEmail.setKey(getUniqueKey());

@@ -46,7 +46,7 @@ public class UserRESTController {
             if (userService.checkUsernameForExisting(userDTO.getEmail())) {
                 return ResponseEntity.ok("user exists");
             } else {
-                return ResponseEntity.ok(userService.addNewAccount(userDTO));
+                return ResponseEntity.ok(userService.addUserByOwner(userDTO));
             }
         } else {
             LOG.info("bad request {}", bindingResult.getAllErrors());
@@ -99,7 +99,7 @@ public class UserRESTController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public RedirectView sendConfirm(@RequestParam String email) {
         if (!"".equals(email)) {
-            userService.sendConfirm(email);
+            userService.sendConfirmation(email);
         }
         return new RedirectView("/house/all");
     }
@@ -108,7 +108,7 @@ public class UserRESTController {
     public ResponseEntity<?> createAccount(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             if (!userService.checkUsernameForExisting(userDTO.getEmail())) {
-                return ResponseEntity.ok(userService.createUserFromEmail(userDTO));
+                return ResponseEntity.ok(userService.createOwner(userDTO));
             }
         }
         return ResponseEntity.ok(new UserDTO());

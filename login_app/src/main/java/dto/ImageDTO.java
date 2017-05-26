@@ -9,6 +9,8 @@ public class ImageDTO implements Serializable{
     private String barChartEnergy;
     private String pieChartHours;
     private String pieChartEnergy;
+    private String splineChart;
+    private String userName;
 
     public String getStartDate() {
         return startDate;
@@ -56,5 +58,21 @@ public class ImageDTO implements Serializable{
 
     public void setPieChartEnergy(String pieChartEnergy) {
         this.pieChartEnergy = pieChartEnergy;
+    }
+
+    public String getSplineChart() {
+        return splineChart;
+    }
+
+    public void setSplineChart(String splineChart) {
+        this.splineChart = splineChart;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
