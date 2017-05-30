@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {WebConfig.class, SecurityConfig.class, PersistenceConfiguration.class, AppWebSocketConfig.class})
 @WebAppConfiguration
-@TestExecutionListeners(listeners={ServletTestExecutionListener.class,
+@TestExecutionListeners(listeners = {ServletTestExecutionListener.class,
         DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class,
         TransactionalTestExecutionListener.class})
@@ -63,7 +63,7 @@ public class TestControllers {
     @Test
     public void authenticationAdminSuccess() throws Exception {
         mvc
-                .perform(formLogin("/api/user/login").user("email","anyapinchuk3@gmail.com").password("1111"))
+                .perform(formLogin("/api/user/login").user("email", "anyapinchuk3@gmail.com").password("1111"))
                 .andExpect(redirectedUrl("/house/all"));
     }
 
@@ -83,13 +83,13 @@ public class TestControllers {
     }
 
     @Test
-    public void updateDevice() throws Exception{
+    public void updateDeviceSuccessWithUser() throws Exception {
         DeviceDTO deviceDTO = new DeviceDTO();
         deviceDTO.setId(4L);
         deviceDTO.setSecured(false);
         deviceDTO.setState("off");
         mvc
-                .perform(formLogin("/api/user/login").user("email","nutaanuta-30.10.30@mail.ru").password("1111"))
+                .perform(formLogin("/api/user/login").user("email", "nutaanuta-30.10.30@mail.ru").password("1111"))
                 .andExpect(redirectedUrl("/device/all"));
         mvc
                 .perform(post("/api/device/update", deviceDTO)).andExpect(status().isFound());

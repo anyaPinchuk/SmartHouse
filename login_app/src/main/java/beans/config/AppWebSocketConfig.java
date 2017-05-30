@@ -31,10 +31,10 @@ public class AppWebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer
         registry.addEndpoint("/").setAllowedOrigins("*").withSockJS().setInterceptors(handshakeInterceptor);
     }
 
-    protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
-        messages
-                .simpDestMatchers("/api/devices")
-                .hasAnyRole("ROLE_OWNER", "ROLE_CHILD", "ROLE_ADULT", "ROLE_GUEST");
-    }
+//    protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
+//        messages
+//                .simpDestMatchers("/api/devices")
+//                .hasAnyRole("ROLE_OWNER", "ROLE_CHILD", "ROLE_ADULT", "ROLE_GUEST");
+//    }
 
 }

@@ -4,7 +4,8 @@ import {User} from './shared/user';
 import {Http} from '@angular/http';
 import {DeviceService} from './shared/device.service';
 import {isBoolean} from 'util';
-import {TranslateService} from "ng2-translate";
+import {TranslateService} from 'ng2-translate';
+import {LocaleService} from "./shared/locale.service";
 
 @Component({
   selector: 'app-root',
@@ -23,11 +24,15 @@ export class AppComponent implements OnInit {
               private http: Http,
               private user: User,
               private  deviceService: DeviceService,
-              private translate: TranslateService) {
-    translate.setDefaultLang('en');
-    translate.use('en');
-    this.translate.get('LANG.EN').subscribe(res => {
-      this.currentLang = res;
+              private translate: TranslateService,
+              private localeService: LocaleService) {
+    this.localeService.getLang().subscribe((response) => {
+      const lang = response.text().substr(1, 2).toLowerCase();
+      translate.setDefaultLang(lang);
+      translate.use(lang);
+      this.translate.get('LANG.' + lang).subscribe(res => {
+        this.currentLang = res;
+      });
     });
   }
 
@@ -70,6 +75,9 @@ export class AppComponent implements OnInit {
   }
 
   changeLocale(lang: string) {
+    this.localeService.setLang(lang).subscribe(() => {
+      console.log('success');
+    });
     this.translate.use(lang);
     this.translate.get('LANG.' + lang).subscribe(res => {
       this.currentLang = res;

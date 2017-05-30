@@ -206,6 +206,9 @@ export class ChartComponent implements OnInit {
     } else if (startEndDates.start.getMonth() === startEndDates.end.getMonth() &&
       startEndDates.start.getDay() === startEndDates.end.getDay()) {
       return;
+    } else if (this.barChartHours === null || this.barChartEnergy === null || this.pieChartHours === null || this.pieChartEnergy === null) {
+      notify('No information about this user');
+      return;
     }
     const svgBarHours = this.barChartHours.getSVG({
       exporting: {

@@ -22,7 +22,7 @@ public class RootConfig extends WebMvcConfigurerAdapter {
         @Bean
         public CookieLocaleResolver localeResolver() {
                 CookieLocaleResolver localeResolver = new CookieLocaleResolver();
-                localeResolver.setDefaultLocale(new Locale("en"));
+                localeResolver.setDefaultLocale(new Locale("EN"));
                 localeResolver.setCookieName("locale");
                 return localeResolver;
         }

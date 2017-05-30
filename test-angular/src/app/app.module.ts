@@ -23,6 +23,7 @@ import {DeviceManageComponent} from './device-manage/device-manage.component';
 import { ChartComponent } from './chart/chart.component';
 import {CustomErrorHandler} from './shared/error-handler';
 import {TranslateLoader, TranslateModule, TranslateStaticLoader} from 'ng2-translate';
+import {LocaleService} from './shared/locale.service';
 
 
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
@@ -55,7 +56,7 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
     JsonpModule,
     routing
   ],
-  providers: [DeviceService, SharedService, HouseService, User, { provide: ErrorHandler, useClass: CustomErrorHandler } ],
+  providers: [DeviceService, LocaleService, SharedService, HouseService, User, { provide: ErrorHandler, useClass: CustomErrorHandler } ],
   bootstrap: [AppComponent],
 })
 export class AppModule {
