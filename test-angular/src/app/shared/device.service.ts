@@ -85,7 +85,11 @@ export class DeviceService {
   }
 
   exportImage(form: any) {
-    return this.http.post('/api/device/image', form);
+    return this.http.post('/api/upload/image', form);
+  }
+
+  find(param: string) {
+    return this.http.get('/api/device/find?param=' + param);
   }
 }
 

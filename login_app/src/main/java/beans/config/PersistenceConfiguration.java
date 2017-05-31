@@ -2,6 +2,8 @@ package beans.config;
 
 import db.ManagerDB;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.hibernate.ejb.HibernatePersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +12,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -24,6 +28,9 @@ import java.util.Properties;
 @PropertySource({"classpath:environment.xml"})
 @ComponentScan(basePackages = {"repository", "db"})
 @EnableJpaRepositories("repository")
+@EnableSolrRepositories(
+        basePackages = "solr",
+        multicoreSupport = true)
 public class PersistenceConfiguration {
     private Environment environment;
 
@@ -94,4 +101,13 @@ public class PersistenceConfiguration {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
+    @Bean
+    public SolrClient solrClient() {
+        return new HttpSolrClient("http://localhost:8983/solr");
+    }
+
+    @Bean
+    public SolrTemplate solrTemplate(SolrClient client) throws Exception {
+        return new SolrTemplate(client);
+    }
 }

@@ -1,8 +1,6 @@
 package beans.config.security;
 
-import exception.WrongCredentialsException;
-import javassist.bytecode.ByteArray;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import exceptions.WrongCredentialsException;
 import org.springframework.util.DigestUtils;
 import repository.UserRepository;
 import entities.User;

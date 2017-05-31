@@ -269,7 +269,7 @@ export class ChartComponent implements OnInit {
         splineChart: results[4].toDataURL(),
         userName: userName
       }).subscribe(data => {
-        window.open('/api/device/report', '_blank');
+        window.open('/api/upload/report', '_blank');
       });
     });
   }

@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -35,7 +36,6 @@ import java.util.List;
 public class DeviceRESTController {
     private DeviceService deviceService;
     private UserService userService;
-    private ReportService excelService;
     private Logger LOG = LoggerFactory.getLogger(DeviceRESTController.class);
 
     private SimpMessageSendingOperations messagingTemplate;
@@ -48,11 +48,6 @@ public class DeviceRESTController {
     @Autowired
     public void setMessagingTemplate(SimpMessageSendingOperations messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
-    }
-
-    @Autowired
-    public void setExcelService(ReportService excelService) {
-        this.excelService = excelService;
     }
 
     @Autowired
@@ -150,34 +145,24 @@ public class DeviceRESTController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_OWNER')")
     @SuppressWarnings("unchecked")
-    public ResponseEntity<?> add(@RequestBody DeviceDTO deviceDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> add(@Valid @RequestBody DeviceDTO deviceDTO, BindingResult bindingResult) {
         LOG.info("handle post request by url /api/device/add");
         if (!bindingResult.hasErrors()) {
-            Device device = deviceService.saveDevice(deviceDTO);
-            return ResponseEntity.ok(device);
+            deviceService.saveDevice(deviceDTO);
+            return ResponseEntity.ok().build();
         } else {
             LOG.info("bad request {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/image")
+    @GetMapping("/find")
     @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
-    public ResponseEntity<?> uploadCharts(@RequestBody ImageDTO imageDTO) throws Exception {
-        LOG.info("handle post request by url /api/device/image");
-        String path = excelService.writeCharts(imageDTO);
-        return ResponseEntity.ok(path);
+    public ResponseEntity<?> findDevices(@RequestParam String param) {
+        LOG.info("handle get request by url /api/device/find");
+        if (!"".equals(param)) {
+            return ResponseEntity.ok(deviceService.findDevices(param));
+        } else return ResponseEntity.ok(deviceService.getAll(null));
     }
 
-    @ResponseBody
-    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
-    @RequestMapping(method = RequestMethod.GET, value = "/report", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    public byte[] getReport(HttpServletResponse response) throws Exception {
-        LOG.info("handle get request by url /api/device/report");
-        InputStream inputStream = new FileInputStream(new File("D:\\report.xlsx"));
-        response.setHeader("Content-Disposition", "attachment; filename=report.xlsx");
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setCharacterEncoding("UTF-8");
-        return IOUtils.toByteArray(inputStream);
-    }
 }

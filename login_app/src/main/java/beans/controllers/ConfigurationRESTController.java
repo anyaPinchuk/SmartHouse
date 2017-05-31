@@ -11,7 +11,7 @@ import java.util.Locale;
 
 @RestController
 @RequestMapping("/api")
-public class ConfigurationRestController {
+public class ConfigurationRESTController {
 
     @GetMapping("/lang")
     public ResponseEntity<?> setLocale(@RequestParam String lang) {

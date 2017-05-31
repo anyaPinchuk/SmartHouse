@@ -121,7 +121,7 @@ public class ReportService {
         row = sheet.createRow(0);
 
         cell = row.createCell(1);
-        cell.setCellValue("Device");
+        cell.setCellValue("SolrDevice");
         cell.setCellStyle(cellStyle);
         cell = row.createCell(2);
         cell.setCellValue("Action");

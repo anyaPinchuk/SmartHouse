@@ -1,5 +1,5 @@
 <div class="row">
-  <form class="col s4 offset-s4" method="post" [formGroup]="deviceForm" action="api/device/add" (ngSubmit)="doAdd($event)" #appForm="ngForm">
+  <form class="col s4 offset-s4" method="post" [formGroup]="deviceForm" action="api/device/add" #appForm="ngForm">
     <div class="row">
       <div class="input-field col s12">
         <input formControlName="name" type="text"  name="name" min="4" max="30" id="name" class="validate border-bottom">
@@ -20,7 +20,7 @@
     </div>
     <p class="red-text center">{{errorMsg}}</p>
     <div class="center">
-      <button class="waves-effect waves-light btn blue" id="loginBtn" type="submit">{{'DEVICE.ADD' | translate}}</button>
+      <button class="waves-effect waves-light btn blue" id="loginBtn" (click)="doAdd($event)">{{'DEVICE.ADD' | translate}}</button>
     </div>
   </form>
 </div>

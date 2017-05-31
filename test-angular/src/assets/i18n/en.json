@@ -13,7 +13,8 @@
     "START_DATE" : "Start date",
     "END_DATE" : "End date",
     "DURING" : "During",
-    "CHOOSE_USER" : "Choose user"
+    "CHOOSE_USER" : "Choose user",
+    "SEARCH" : "Search"
   },
   "LANG": {
     "RU": "Russian",

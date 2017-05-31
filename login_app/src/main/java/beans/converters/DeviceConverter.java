@@ -3,6 +3,7 @@ package beans.converters;
 import dto.DeviceDTO;
 import dto.UserDTO;
 import entities.Device;
+import entities.solr.SolrDevice;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
@@ -18,6 +19,12 @@ public class DeviceConverter {
     public Optional<DeviceDTO> toDTO(Device entity) {
         if (entity == null) return Optional.empty();
         return Optional.of(new DeviceDTO(entity.getId(), entity.getName(), entity.getModel(), entity.getState(),
+                entity.getPower()));
+    }
+
+    public Optional<DeviceDTO> toDTO(SolrDevice entity) {
+        if (entity == null) return Optional.empty();
+        return Optional.of(new DeviceDTO(Long.valueOf(entity.getId()), entity.getName(), entity.getModel(), entity.getState(),
                 entity.getPower()));
     }
 }

@@ -43,9 +43,16 @@ export class DeviceComponent implements OnInit {
     this.deviceService.updateDevice(device)
       .subscribe(
         (data) => {
-            console.log(device);
-            this.deviceService.send(JSON.stringify(device), '/api/notifyOwner');
+          this.deviceService.send(JSON.stringify(device), '/api/notifyOwner');
         }
       );
+  }
+
+  onChange(searchParam) {
+    this.deviceService.find(searchParam).subscribe(
+      (data) => {
+        this.devices = data.json();
+      }
+    );
   }
 }

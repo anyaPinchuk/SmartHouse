@@ -4,12 +4,16 @@ import beans.converters.DeviceConverter;
 import dto.DeviceDTO;
 import dto.WorkLogResult;
 import entities.*;
+import entities.Device;
+import entities.solr.SolrDevice;
 import exceptions.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import repository.*;
+import repository.DeviceRepository;
+import solr.SolrDeviceRepository;
 
 import java.security.Principal;
 import java.sql.Timestamp;
@@ -26,12 +30,18 @@ public class DeviceService {
     private DeviceConverter deviceConverter;
     private UserRepository userRepository;
     private RestrictionRepository restrictionRepository;
+    private SolrDeviceRepository solrDeviceRepository;
 
     private static final Double COST_PER_ONE_WATT = 0.26;
 
     @Autowired
     public void setWorkLogRepository(WorkLogRepository workLogRepository) {
         this.workLogRepository = workLogRepository;
+    }
+
+    @Autowired
+    public void setSolrDeviceRepository(SolrDeviceRepository solrDeviceRepository) {
+        this.solrDeviceRepository = solrDeviceRepository;
     }
 
     @Autowired
@@ -84,6 +94,10 @@ public class DeviceService {
         return deviceConverter.toDTO(device).orElseThrow(() -> new ServiceException("device wasn't converted"));
     }
 
+    private DeviceDTO toDTO(SolrDevice device) {
+        return deviceConverter.toDTO(device).orElseThrow(() -> new ServiceException("solr device wasn't converted"));
+    }
+
     private Device toEntity(DeviceDTO device) {
         return deviceConverter.toEntity(device).orElseThrow(() -> new ServiceException("deviceDTO wasn't converted"));
     }
@@ -93,6 +107,8 @@ public class DeviceService {
         device = deviceRepository.findOne(device.getId());
         device.setState(deviceDTO.getState());
         deviceRepository.save(device);
+        solrDeviceRepository.save(new SolrDevice(String.valueOf(device.getId()), device.getName(),
+                device.getModel(), device.getState(), device.getPower(), String.valueOf(device.getSmartHouse().getId())));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restriction restriction = restrictionRepository.findByDeviceIdAndAndUserId(deviceDTO.getId(), user.getId());
         if (restriction != null) {
@@ -134,7 +150,12 @@ public class DeviceService {
         Device device = toEntity(deviceDTO);
         device.setState("off");
         device.setSmartHouse(getHouse());
-        return deviceRepository.save(device);
+        deviceRepository.save(device);
+        if (device.getId() != null) {
+            solrDeviceRepository.save(new SolrDevice(String.valueOf(device.getId()), device.getName(),
+                    device.getModel(), device.getState(), device.getPower(), String.valueOf(device.getSmartHouse().getId())));
+        }
+        return device;
     }
 
     private House getHouse() {
@@ -238,5 +259,17 @@ public class DeviceService {
             workLog.getUser().setSmartHouse(null);
         });
         return workLogs;
+    }
+
+    public List<DeviceDTO> findDevices(String param) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<SolrDevice> solrDevices = solrDeviceRepository.find(param, String.valueOf(user.getSmartHouse().getId()));
+        List<DeviceDTO> deviceDTOS = new ArrayList<>();
+        if (solrDevices != null) {
+            solrDevices.forEach(solrDevice -> {
+                deviceDTOS.add(toDTO(solrDevice));
+            });
+        }
+        return deviceDTOS;
     }
 }
