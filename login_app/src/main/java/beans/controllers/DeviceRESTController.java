@@ -1,15 +1,11 @@
 package beans.controllers;
 
 import beans.services.DeviceService;
-import beans.services.ReportService;
 import beans.services.UserService;
 import dto.DeviceDTO;
-import dto.ImageDTO;
 import dto.WorkLogResult;
-import entities.Device;
 import entities.User;
 import entities.WorkLog;
-import org.apache.poi.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +28,10 @@ import java.util.List;
 public class DeviceRESTController {
     private DeviceService deviceService;
     private UserService userService;
-    private Logger LOG = LoggerFactory.getLogger(DeviceRESTController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceRESTController.class);
+    private static final String ERROR_MSG_BAD_REQUEST = "bad request {}";
+    private static final String DATE_FORMAT_CONSTANT = "yyyy-MM-dd";
+    private static final String ERROR_MSG_PARSE_DATE = "parse date {} or {} failed";
 
     private SimpMessageSendingOperations messagingTemplate;
 
@@ -73,7 +68,7 @@ public class DeviceRESTController {
             messagingTemplate.convertAndSend("/topic/devices", deviceService.getAll(null));
             return ResponseEntity.ok(device);
         } else {
-            LOG.info("bad request {}", bindingResult.getAllErrors());
+            LOG.info(ERROR_MSG_BAD_REQUEST, bindingResult.getAllErrors());
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
     }
@@ -82,11 +77,18 @@ public class DeviceRESTController {
     @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getByDate(@RequestParam String startDate,
-                                       @RequestParam String endDate, @RequestParam String user) throws ParseException {
+                                       @RequestParam String endDate, @RequestParam String user) {
         LOG.info("handle get request by url /api/device/getByDate");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Timestamp start = new Timestamp(format.parse(startDate).getTime());
-        Timestamp end = new Timestamp(format.parse(endDate).getTime());
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_CONSTANT);
+        Timestamp start = null;
+        Timestamp end = null;
+        try {
+            start = new Timestamp(format.parse(startDate).getTime());
+            end = new Timestamp(format.parse(endDate).getTime());
+        } catch (ParseException e) {
+            LOG.error(ERROR_MSG_PARSE_DATE, startDate, endDate);
+            ResponseEntity.badRequest().body("Wrong start or end date");
+        }
         return ResponseEntity.ok(deviceService.getByDateInterval(start, end, user));
     }
 
@@ -94,11 +96,18 @@ public class DeviceRESTController {
     @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getWorkLogs(@RequestParam String startDate,
-                                         @RequestParam String endDate, @RequestParam String user) throws Exception {
+                                         @RequestParam String endDate, @RequestParam String user) {
         LOG.info("handle get request by url /api/device/getWorkLogs");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Timestamp start = new Timestamp(format.parse(startDate).getTime());
-        Timestamp end = new Timestamp(format.parse(endDate).getTime());
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_CONSTANT);
+        Timestamp start = null;
+        Timestamp end = null;
+        try {
+            start = new Timestamp(format.parse(startDate).getTime());
+            end = new Timestamp(format.parse(endDate).getTime());
+        } catch (ParseException e) {
+            LOG.error(ERROR_MSG_PARSE_DATE, startDate, endDate);
+            ResponseEntity.badRequest().body("Wrong start or end date");
+        }
         List<WorkLogResult> workLogs = deviceService.getWorkLogsByDevice(start, end, user);
         return ResponseEntity.ok(workLogs);
     }
@@ -107,11 +116,18 @@ public class DeviceRESTController {
     @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
     @SuppressWarnings("unchecked")
     public ResponseEntity<?> getAllUserWorkLogs(@RequestParam String startDate,
-                                         @RequestParam String endDate) throws Exception {
+                                                @RequestParam String endDate) {
         LOG.info("handle get request by url /api/device/getUserWorkLogs");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Timestamp start = new Timestamp(format.parse(startDate).getTime());
-        Timestamp end = new Timestamp(format.parse(endDate).getTime());
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_CONSTANT);
+        Timestamp start = null;
+        Timestamp end = null;
+        try {
+            start = new Timestamp(format.parse(startDate).getTime());
+            end = new Timestamp(format.parse(endDate).getTime());
+        } catch (ParseException e) {
+            LOG.error(ERROR_MSG_PARSE_DATE, startDate, endDate);
+            ResponseEntity.badRequest().body("Wrong start or end date");
+        }
         List<WorkLog> workLogs = deviceService.getUserWorkLogs(start, end);
         return ResponseEntity.ok(workLogs);
     }
@@ -137,7 +153,7 @@ public class DeviceRESTController {
             messagingTemplate.convertAndSendToUser(user.getSessionID(), "/queue/updateDevices", deviceService.getAll(user));
             return ResponseEntity.ok().build();
         } else {
-            LOG.info("bad request {}", bindingResult.getAllErrors());
+            LOG.error(ERROR_MSG_BAD_REQUEST, bindingResult.getAllErrors());
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
     }
@@ -151,7 +167,7 @@ public class DeviceRESTController {
             deviceService.saveDevice(deviceDTO);
             return ResponseEntity.ok().build();
         } else {
-            LOG.info("bad request {}", bindingResult.getAllErrors());
+            LOG.error(ERROR_MSG_BAD_REQUEST, bindingResult.getAllErrors());
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
     }

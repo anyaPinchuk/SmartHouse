@@ -34,12 +34,12 @@ public class WebSocketController {
     }
 
     @SubscribeMapping("/devices")
-    public List<DeviceDTO> getDevices(SimpMessageHeaderAccessor headerAccessor) throws Exception {
+    public List<DeviceDTO> getDevices(SimpMessageHeaderAccessor headerAccessor) {
         return deviceService.getAllByPrincipal(headerAccessor.getUser());
     }
 
     @SubscribeMapping("/connect")
-    public String connect(SimpMessageHeaderAccessor headerAccessor, Principal principal) throws Exception {
+    public String connect(SimpMessageHeaderAccessor headerAccessor, Principal principal){
         String session = principal.getName();
         User user = (User) ((UsernamePasswordAuthenticationToken) headerAccessor.getUser()).getPrincipal();
         if (!session.equals(user.getSessionID())) {

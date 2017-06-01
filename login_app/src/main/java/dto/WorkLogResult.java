@@ -9,14 +9,6 @@ public class WorkLogResult {
     private String devicePower;
     private String deviceName;
 
-    public WorkLogResult() {
-    }
-
-    public WorkLogResult(Long deviceId, List<WorkLog> workLogList) {
-        this.deviceId = deviceId;
-        this.workLogList = workLogList;
-    }
-
     public WorkLogResult(Long deviceId, List<WorkLog> workLogList, String devicePower, String deviceName) {
         this.deviceId = deviceId;
         this.workLogList = workLogList;

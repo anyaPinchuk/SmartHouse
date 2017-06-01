@@ -1,6 +1,5 @@
 package dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Email;
 
@@ -31,11 +30,6 @@ public class UserDTO {
 
     public UserDTO() {
         this.email = "";
-    }
-
-    public UserDTO(String email, String password) {
-        this.email = email;
-        this.password = password;
     }
 
     public UserDTO(Long id, String login, String name, String password, Date dateOfRegistration, String role) {

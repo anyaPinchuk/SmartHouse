@@ -27,7 +27,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) {
 
         String email = authentication.getName();
         String password = DigestUtils.md5DigestAsHex(((String) authentication.getCredentials()).getBytes());

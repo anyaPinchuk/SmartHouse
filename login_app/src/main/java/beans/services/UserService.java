@@ -53,7 +53,8 @@ public class UserService {
     }
 
     public UserDTO convertToDTO(User owner) {
-        if (owner == null) return null;
+        if (owner == null)
+            return new UserDTO();
         return converter.toDTO(owner).orElseThrow(() -> new ServiceException("user wasn't converted"));
     }
 
@@ -98,7 +99,8 @@ public class UserService {
     }
 
     public boolean checkKeyForExisting(String key) {
-        if (key == null) return false;
+        if (key == null)
+            return false;
         UserEmail userEmail = emailRepository.findByKey(key);
         if (userEmail != null) {
             Long current = System.currentTimeMillis();
@@ -114,7 +116,7 @@ public class UserService {
 
         if (users != null) {
             users.forEach(obj -> {
-                if (!obj.getRole().equalsIgnoreCase("ROLE_OWNER")) {
+                if (!"ROLE_OWNER".equalsIgnoreCase(obj.getRole())) {
                     UserDTO dto = convertToDTO(obj);
                     dto.setPassword("");
                     userDTOS.add(dto);

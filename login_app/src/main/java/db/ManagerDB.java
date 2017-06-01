@@ -29,13 +29,13 @@ public class ManagerDB {
 
     private Environment environment;
 
+    public ManagerDB(@Value("${prefixDbParams}") String prefixDbParams) {
+        this.prefixDbParams = prefixDbParams;
+    }
+
     @Autowired
     public void setEnvironment(Environment environment) {
         this.environment = environment;
-    }
-
-    public ManagerDB(@Value("${prefixDbParams}") String prefixDbParams) {
-        this.prefixDbParams = prefixDbParams;
     }
 
 

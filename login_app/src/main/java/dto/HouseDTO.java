@@ -1,6 +1,5 @@
 package dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Email;
 
 import javax.validation.constraints.NotNull;
@@ -26,10 +25,6 @@ public class HouseDTO {
     @Email(regexp = "^.+@.+\\.[a-z]{2,4}$")
     @NotNull
     private String ownerLogin;
-
-
-    public HouseDTO() {
-    }
 
     public HouseDTO(String country, String city, String street, String house, String flat, String email) {
         this.country = country;

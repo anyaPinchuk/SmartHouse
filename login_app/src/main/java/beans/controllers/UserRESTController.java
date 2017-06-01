@@ -25,7 +25,7 @@ public class UserRESTController {
 
     private UserService userService;
     private UserConverter userConverter;
-    private Logger LOG = LoggerFactory.getLogger(UserRESTController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserRESTController.class);
 
     @Autowired
     public void setUserService(UserService userService) {
@@ -106,10 +106,8 @@ public class UserRESTController {
 
     @PostMapping("/new")
     public ResponseEntity<?> createAccount(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
-        if (!bindingResult.hasErrors()) {
-            if (!userService.checkUsernameForExisting(userDTO.getEmail())) {
-                return ResponseEntity.ok(userService.createOwner(userDTO));
-            }
+        if (!bindingResult.hasErrors() && !userService.checkUsernameForExisting(userDTO.getEmail())) {
+            return ResponseEntity.ok(userService.createOwner(userDTO));
         }
         return ResponseEntity.ok(new UserDTO());
     }

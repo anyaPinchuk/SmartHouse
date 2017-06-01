@@ -124,7 +124,7 @@ public class DeviceService {
         if ("off".equalsIgnoreCase(deviceDTO.getState())) {
             workLog.setConsumedEnergy(String.valueOf(countConsumedEnergy(device)));
             workLog.setCost(String.format("%.3f", Double.valueOf(workLog.getConsumedEnergy()) * COST_PER_ONE_WATT));
-            workLog.setHoursOfWork(Long.valueOf(workLog.getConsumedEnergy()) / Long.valueOf(device.getPower()) + "");
+            workLog.setHoursOfWork(Long.toString(Long.valueOf(workLog.getConsumedEnergy()) / Long.valueOf(device.getPower())));
         }
         workLogRepository.save(workLog);
         return toDTO(device);
@@ -189,12 +189,12 @@ public class DeviceService {
         return iterateOverDevices(devices, userEntity);
     }
 
-    public List<DeviceDTO> getAll(User user) {
-        if (user == null) {
-            user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public List<DeviceDTO> getAll(User userFromClient) {
+        if (userFromClient == null) {
+            userFromClient = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         }
-        List<Device> devices = deviceRepository.findAllBySmartHouse(user.getSmartHouse());
-        return iterateOverDevices(devices, user);
+        List<Device> devices = deviceRepository.findAllBySmartHouse(userFromClient.getSmartHouse());
+        return iterateOverDevices(devices, userFromClient);
     }
 
     public List<DeviceDTO> getByDateInterval(Timestamp startDate, Timestamp endDate, String email) {
@@ -214,14 +214,14 @@ public class DeviceService {
                 result += Long.valueOf(dto.getEnergy());
                 dto.setEnergy(String.valueOf(result));
             });
-            if (logs.size() != 0) {
+            if (!logs.isEmpty()) {
                 deviceDTOS.add(dto);
             }
         });
         return deviceDTOS;
     }
 
-    public List<WorkLogResult> getWorkLogsByDevice(Timestamp start, Timestamp end, String email) throws Exception {
+    public List<WorkLogResult> getWorkLogsByDevice(Timestamp start, Timestamp end, String email) {
         House house = getHouse();
         User user = userRepository.findUserByLogin(email);
         List<Device> devices = deviceRepository.findAllBySmartHouse(house);
@@ -236,17 +236,16 @@ public class DeviceService {
             List<WorkLog> workLogList = workLogs.stream()
                     .filter(workLog -> workLog.getDevice().getId().equals(device.getId()))
                     .collect(Collectors.toList());
-            if (workLogList.size() != 0) {
+            if (!workLogList.isEmpty()) {
                 workLogResults.add(new WorkLogResult(device.getId(), workLogList, device.getPower(), device.getName()));
             }
 
         });
-        workLogResults.forEach(workLogResult -> {
-            workLogResult.getWorkLogList().forEach(workLog -> {
-                workLog.setDevice(null);
-                workLog.getUser().setSmartHouse(null);
-            });
-        });
+        workLogResults.forEach(workLogResult ->
+                workLogResult.getWorkLogList().forEach(workLog -> {
+                    workLog.setDevice(null);
+                    workLog.getUser().setSmartHouse(null);
+                }));
         return workLogResults;
     }
 
@@ -266,9 +265,8 @@ public class DeviceService {
         List<SolrDevice> solrDevices = solrDeviceRepository.find(param, String.valueOf(user.getSmartHouse().getId()));
         List<DeviceDTO> deviceDTOS = new ArrayList<>();
         if (solrDevices != null) {
-            solrDevices.forEach(solrDevice -> {
-                deviceDTOS.add(toDTO(solrDevice));
-            });
+            solrDevices.forEach(solrDevice ->
+                    deviceDTOS.add(toDTO(solrDevice)));
         }
         return deviceDTOS;
     }

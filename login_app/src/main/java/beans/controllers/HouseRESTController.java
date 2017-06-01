@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/house")
 public class HouseRESTController {
     private HouseService houseService;
-    private Logger LOG = LoggerFactory.getLogger(HouseRESTController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HouseRESTController.class);
 
     @Autowired
     public void setHouseService(HouseService houseService) {

@@ -27,8 +27,7 @@ public class SolrDevice {
     private String houseId;
 
 
-    public SolrDevice() {
-    }
+    public SolrDevice() {}
 
     public SolrDevice(String id, String name, String model, String state, String power, String houseId) {
         this.id = id;

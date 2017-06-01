@@ -43,15 +43,13 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
         Collection<? extends GrantedAuthority> authorities
                 = authentication.getAuthorities();
         for (GrantedAuthority grantedAuthority : authorities) {
-            if (grantedAuthority.getAuthority().equals("ROLE_CHILD") ||
-                    grantedAuthority.getAuthority().equals("ROLE_GUEST") ||
-                    grantedAuthority.getAuthority().equals("ROLE_ADULT") ||
-                    grantedAuthority.getAuthority().equals("ROLE_OWNER")) {
+            if ("ROLE_CHILD".equals(grantedAuthority.getAuthority()) ||
+                    "ROLE_GUEST".equals(grantedAuthority.getAuthority()) ||
+                    "ROLE_ADULT".equals(grantedAuthority.getAuthority()) ||
+                    "ROLE_OWNER".equals(grantedAuthority.getAuthority())) {
                 isUser = true;
-                break;
-            } else if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
+            } else if ("ROLE_ADMIN".equals(grantedAuthority.getAuthority())) {
                 isUser = false;
-                break;
             }
         }
 

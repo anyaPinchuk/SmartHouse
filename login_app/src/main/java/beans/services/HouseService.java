@@ -21,7 +21,7 @@ public class HouseService {
     private AddressRepository addressRepository;
     private UserService userService;
     private MailService mailService;
-    private Logger LOG = LoggerFactory.getLogger(HouseService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HouseService.class);
 
     @Autowired
     public void setHouseRepository(HouseRepository houseRepository) {
@@ -64,7 +64,7 @@ public class HouseService {
             userService.saveUserEmail(userEmail);
             return true;
         }
-        LOG.error("house was not saved");
+        LOG.warn("house was not saved");
         return false;
     }
 

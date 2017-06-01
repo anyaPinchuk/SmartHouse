@@ -24,7 +24,7 @@ public class GlobalDefaultExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public RedirectView notFoundPageHandler(NoHandlerFoundException e) {
-        LOG.error("Was thrown NoHandlerFoundException: " + e.getMessage());
+        LOG.error("Was thrown NoHandlerFoundException: {}", e.getMessage());
         return new RedirectView("/");
     }
 
@@ -32,7 +32,7 @@ public class GlobalDefaultExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public String serviceExceptionHandler(ServiceException e) {
-        LOG.warn("Was thrown ServiceException: " + e.getBusinessMessage());
+        LOG.warn("Was thrown ServiceException: {}", e.getBusinessMessage());
         return e.getBusinessMessage();
     }
 
@@ -41,7 +41,7 @@ public class GlobalDefaultExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ResponseBody
     public String authenticationExceptionHandler(Exception e) {
-        LOG.warn("Was thrown AuthenticationException: " + e);
+        LOG.warn("Was thrown AuthenticationException: {}", e);
         return e.getLocalizedMessage();
     }
 
@@ -49,7 +49,7 @@ public class GlobalDefaultExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public String handleError(Exception e) {
-        LOG.warn("Was thrown Exception: " + e);
+        LOG.warn("Was thrown Exception: {}", e);
         return e.getLocalizedMessage();
     }
 }

@@ -15,14 +15,6 @@ public class WorkLog {
     private User user;
     private Device device;
 
-    public WorkLog() {
-    }
-
-    public WorkLog(String consumedEnergy, Timestamp dateOfAction) {
-        this.consumedEnergy = consumedEnergy;
-        this.dateOfAction = dateOfAction;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_work_log", unique = true, nullable = false)

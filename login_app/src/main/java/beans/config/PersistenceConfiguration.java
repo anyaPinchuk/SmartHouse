@@ -33,13 +33,12 @@ import java.util.Properties;
         multicoreSupport = true)
 public class PersistenceConfiguration {
     private Environment environment;
+    private String additionalParams;
 
     @Autowired
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }
-
-    private String additionalParams;
 
     @PostConstruct
     public void buildAdditionalParams() {
@@ -91,7 +90,7 @@ public class PersistenceConfiguration {
                 .getPropertySources().get("class path resource [environment.xml]");
         ((Properties) propertySources.getSource()).entrySet().stream()
                 .filter(pair -> ((String) pair.getKey()).startsWith(hibernatePrefix))
-                .forEach(pair -> properties.setProperty(((String) pair.getKey()),
+                .forEach(pair -> properties.setProperty((String) pair.getKey(),
                         (String) pair.getValue()));
         return properties;
     }
@@ -107,7 +106,7 @@ public class PersistenceConfiguration {
     }
 
     @Bean
-    public SolrTemplate solrTemplate(SolrClient client) throws Exception {
+    public SolrTemplate solrTemplate(SolrClient client) {
         return new SolrTemplate(client);
     }
 }
