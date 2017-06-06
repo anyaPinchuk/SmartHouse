@@ -8,6 +8,7 @@ import entities.Device;
 import entities.solr.SolrDevice;
 import exceptions.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -158,6 +159,16 @@ public class DeviceService {
         return device;
     }
 
+    public Long getPagesCount() {
+        return solrDeviceRepository.countByHouseId(getHouse().getId().toString());
+    }
+
+    public int getPagesCountWithSearch(String searchParam) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<SolrDevice> solrDevices = solrDeviceRepository.find(searchParam, String.valueOf(user.getSmartHouse().getId()));
+        return solrDevices.size();
+    }
+
     private House getHouse() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return houseRepository.findHouseById(user.getSmartHouse().getId());
@@ -189,13 +200,11 @@ public class DeviceService {
         return iterateOverDevices(devices, userEntity);
     }
 
-    public List<DeviceDTO> getAll(User userFromClient) {
-        if (userFromClient == null) {
-            userFromClient = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        }
-        List<Device> devices = deviceRepository.findAllBySmartHouse(userFromClient.getSmartHouse());
-        return iterateOverDevices(devices, userFromClient);
-    }
+//    public List<DeviceDTO> getAll() {
+//        User userFromClient = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        List<Device> devices = deviceRepository.findAllBySmartHouse(userFromClient.getSmartHouse());
+//        return iterateOverDevices(devices, userFromClient);
+//    }
 
     public List<DeviceDTO> getByDateInterval(Timestamp startDate, Timestamp endDate, String email) {
         House house = getHouse();
@@ -260,9 +269,10 @@ public class DeviceService {
         return workLogs;
     }
 
-    public List<DeviceDTO> findDevices(String param) {
+    public List<DeviceDTO> findDevices(String searchParam) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<SolrDevice> solrDevices = solrDeviceRepository.find(param, String.valueOf(user.getSmartHouse().getId()));
+        List<SolrDevice> solrDevices = solrDeviceRepository.find(searchParam, String.valueOf(user.getSmartHouse().getId()),
+                new PageRequest(0, 5));
         List<DeviceDTO> deviceDTOS = new ArrayList<>();
         if (solrDevices != null) {
             solrDevices.forEach(solrDevice ->
@@ -270,4 +280,17 @@ public class DeviceService {
         }
         return deviceDTOS;
     }
+
+    public List<DeviceDTO> getByPage(int page, int size) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<SolrDevice> solrDevices = solrDeviceRepository.findByHouseId(String.valueOf(user.getSmartHouse().getId()),
+                new PageRequest(page, size));
+        List<DeviceDTO> deviceDTOS = new ArrayList<>();
+        if (solrDevices != null) {
+            solrDevices.forEach(solrDevice ->
+                    deviceDTOS.add(toDTO(solrDevice)));
+        }
+        return deviceDTOS;
+    }
+
 }

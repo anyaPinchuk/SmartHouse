@@ -1,9 +1,10 @@
 package entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-public class House {
+public class House implements Serializable{
     private Long id;
     private String ownerLogin;
     private Address address;

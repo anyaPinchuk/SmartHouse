@@ -3,6 +3,8 @@ package beans.services;
 import beans.converters.UserConverter;
 import entities.House;
 import entities.UserEmail;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.DigestUtils;
 import repository.HouseRepository;
@@ -15,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -62,6 +62,10 @@ public class UserService {
         return userRepository.findUserByLogin(username);
     }
 
+    public User loadUserByToken(String token){
+        return userRepository.findByToken(token);
+    }
+
     public UserDTO addUserByOwner(UserDTO userDTO) {
         User owner = getAuthUser();
         User user = new User(userDTO.getEmail(), DigestUtils.md5DigestAsHex(userDTO.getPassword().getBytes()));
@@ -72,7 +76,7 @@ public class UserService {
         return convertToDTO(user);
     }
 
-    public User getAuthUser(){
+    public User getAuthUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
@@ -86,6 +90,7 @@ public class UserService {
         user.setSmartHouse(houseRepository.findHouseByOwnerLogin(userDTO.getEmail()));
         user.setRole("ROLE_OWNER");
         user.setName(userDTO.getName());
+        user.setToken(generateToken(user));
         userRepository.save(user);
         return convertToDTO(user);
     }
@@ -138,6 +143,19 @@ public class UserService {
     String getUniqueKey() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
+    }
+
+    private String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+
+        claims.put("username", user.getLogin());
+        claims.put("created", new Date());
+        claims.put("role", user.getRole());
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .signWith(SignatureAlgorithm.HS512, "customJwtSecretKey")
+                .compact();
     }
 
     public List<UserDTO> findAllUsersByHouse(House smartHouse) {

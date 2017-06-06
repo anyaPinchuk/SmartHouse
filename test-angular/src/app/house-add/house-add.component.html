@@ -1,38 +1,38 @@
-<div class="row">
+<div class="row margin-top">
   <form class="col s4 offset-s4" method="post" [formGroup]="houseForm" action="api/house/add"
         (ngSubmit)="doAdd($event)" #appForm="ngForm">
     <div class="row">
       <div class="input-field col s12">
         <input formControlName="country" required type="text" name="country" id="country" min="2" max="30"
                class="validate border-bottom">
-        <label for="country">{{'HOUSE.COUNTRY' | translate}}</label>
+        <label for="country">{{'COUNTRY' | translate}}</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
         <input formControlName="city" required type="text" name="city" id="city" min="2" max="30"
                class="validate border-bottom">
-        <label for="city">{{'HOUSE.CITY' | translate}}</label>
+        <label for="city">{{'CITY' | translate}}</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
         <input formControlName="street" required type="text" name="street" id="street" min="2" max="30"
                class="validate border-bottom">
-        <label for="street">{{'HOUSE.STREET' | translate}}</label>
+        <label for="street">{{'STREET' | translate}}</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
         <input formControlName="house" required type="text" name="house" id="house" min="1" max="5"
                class="validate border-bottom">
-        <label for="house">{{'HOUSE.HOUSE' | translate}}</label>
+        <label for="house">{{'HOUSE' | translate}}</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
         <input formControlName="flat" type="number" name="flat" id="flat" class="validate border-bottom">
-        <label for="flat">{{'HOUSE.FLAT' | translate}}</label>
+        <label for="flat">{{'FLAT' | translate}}</label>
       </div>
     </div>
     <div class="row">
@@ -43,7 +43,7 @@
       </div>
     </div>
     <div class="center">
-      <button class="waves-effect waves-light btn blue" type="submit">{{'BUTTON.HOUSE' | translate}}</button>
+      <button class="waves-effect waves-light btn #bcaaa4 brown lighten-2" type="submit">{{'BUTTON.HOUSE' | translate}}</button>
     </div>
   </form>
 </div>

@@ -1,9 +1,10 @@
 package entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity(name = "device")
-public class Device {
+public class Device implements Serializable{
     private Long id;
     private String name;
     private String model;

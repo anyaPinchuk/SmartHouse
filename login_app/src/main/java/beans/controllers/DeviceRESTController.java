@@ -53,9 +53,31 @@ public class DeviceRESTController {
     @GetMapping("/all")
     @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
     @SuppressWarnings("unchecked")
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<?> getAll(@RequestParam String startPage) {
         LOG.info("handle get request by url /api/device/all");
-        return ResponseEntity.ok(deviceService.getAll(null));
+        try {
+            int page = Integer.parseInt(startPage);
+            return ResponseEntity.ok(deviceService.getByPage(page, 5));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("start position or size per page is wrong");
+        }
+
+    }
+
+    @GetMapping("/getPagesCount")
+    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<?> getPagesCount() {
+        LOG.info("handle get request by url /api/device/all");
+        return ResponseEntity.ok(deviceService.getPagesCount());
+    }
+
+    @GetMapping("/getPagesCountWithSearch")
+    @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<?> getPagesCountWithSearch(@RequestParam String searchParam) {
+        LOG.info("handle get request by url /api/device/all");
+        return ResponseEntity.ok(deviceService.getPagesCountWithSearch(searchParam));
     }
 
     @PostMapping("/update")
@@ -65,7 +87,7 @@ public class DeviceRESTController {
         LOG.info("handle post request by url /api/device/update");
         if (!bindingResult.hasErrors()) {
             DeviceDTO device = deviceService.updateDevice(deviceDTO);
-            messagingTemplate.convertAndSend("/topic/devices", deviceService.getAll(null));
+            messagingTemplate.convertAndSend("/topic/devices", deviceService.getByPage(0, 5));
             return ResponseEntity.ok(device);
         } else {
             LOG.info(ERROR_MSG_BAD_REQUEST, bindingResult.getAllErrors());
@@ -150,7 +172,7 @@ public class DeviceRESTController {
         User user = userService.loadAccountByUsername(email);
         if (!bindingResult.hasErrors()) {
             deviceService.updateDevices(devices);
-            messagingTemplate.convertAndSendToUser(user.getSessionID(), "/queue/updateDevices", deviceService.getAll(user));
+            messagingTemplate.convertAndSendToUser(user.getSessionID(), "/queue/updateDevices", deviceService.getByPage(0,5));
             return ResponseEntity.ok().build();
         } else {
             LOG.error(ERROR_MSG_BAD_REQUEST, bindingResult.getAllErrors());
@@ -174,11 +196,11 @@ public class DeviceRESTController {
 
     @GetMapping("/find")
     @PreAuthorize("hasAnyRole('ROLE_OWNER', 'ROLE_CHILD', 'ROLE_ADULT', 'ROLE_GUEST')")
-    public ResponseEntity<?> findDevices(@RequestParam String param) {
+    public ResponseEntity<?> findDevices(@RequestParam String searchParam) {
         LOG.info("handle get request by url /api/device/find");
-        if (!"".equals(param)) {
-            return ResponseEntity.ok(deviceService.findDevices(param));
-        } else return ResponseEntity.ok(deviceService.getAll(null));
+        if (!"".equals(searchParam)) {
+            return ResponseEntity.ok(deviceService.findDevices(searchParam));
+        } else return ResponseEntity.ok(deviceService.getByPage(0, 5));
     }
 
 }

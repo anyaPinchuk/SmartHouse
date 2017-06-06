@@ -15,7 +15,6 @@ export class DeviceManageComponent implements OnInit {
   selectedUser: Account = new Account();
   selectedDevice: Device = new Device();
   devices: Device[];
-  errorMsg = '';
 
   constructor(private deviceService: DeviceService,
               private ss: SharedService,
@@ -57,27 +56,24 @@ export class DeviceManageComponent implements OnInit {
       case 'startTime': {
         if (regexp.test(input.value)) {
           this.selectedDevice.startTime = input.value;
-          this.errorMsg = '';
         } else {
-          this.errorMsg = 'Wrong value for start time';
+          notify('Wrong value for start time');
         }
         break;
       }
       case 'endTime': {
         if (regexp.test(input.value)) {
           this.selectedDevice.endTime = input.value;
-          this.errorMsg = '';
         } else {
-          this.errorMsg = 'Wrong value for end time';
+          notify('Wrong value for end time');
         }
         break;
       }
       case 'hours': {
         if (/^\d*$/.test(input.value)) {
           this.selectedDevice.hours = input.value;
-          this.errorMsg = '';
         } else {
-          this.errorMsg = 'Wrong value for hours';
+          notify('Wrong value for hours');
         }
         break;
       }
@@ -90,12 +86,12 @@ export class DeviceManageComponent implements OnInit {
       if (Number(startHours) > Number(endHours)) {
         this.selectedDevice.startTime = '';
         this.selectedDevice.endTime = '';
-        this.errorMsg = 'Wrong time interval';
+       notify('Wrong time interval');
       } else if (Number(startHours) === Number(endHours)) {
         if (Number(startMinutes) >= Number(endMinutes)) {
           this.selectedDevice.startTime = '';
           this.selectedDevice.endTime = '';
-          this.errorMsg = 'Wrong time interval';
+          notify('Wrong time interval');
         }
       }
     }
@@ -105,7 +101,6 @@ export class DeviceManageComponent implements OnInit {
   saveChanges(event) {
     this.devices[0].email = this.selectedUser.email;
     this.deviceService.saveDevices(this.devices).subscribe();
-    this.errorMsg = '';
   }
 }
 
@@ -113,4 +108,7 @@ export class Account {
   email: string;
   role: string;
   dateOfRegistration: Date;
+}
+function notify(msg) {
+  Materialize.toast(msg, 4000);
 }

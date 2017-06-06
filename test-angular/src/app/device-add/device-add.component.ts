@@ -39,12 +39,15 @@ export class DeviceAddComponent implements OnInit {
           },
           (error) => {
             console.error('could not post because', error);
-            this.errorMsg = 'The fields are incorrect';
+            notify('The fields are incorrect');
           }
         );
     } else {
-      this.errorMsg = 'Wrong name or power value!';
+      notify('Fields name and power can\'t be empty !');
     }
   }
 
+}
+function notify(msg) {
+  Materialize.toast(msg, 4000);
 }

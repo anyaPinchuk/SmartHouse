@@ -1,42 +1,46 @@
-<nav class="margin_bottom">
-  <div class="nav-wrapper blue">
-    <a class="brand-logo" [routerLink]="['/']">{{'INFO.TITLE' | translate}}</a>
-    <ul id="nav-mobile" class="right hide-on-med-and-down">
-      <li><a class='dropdown-button btn blue' data-activates='dropdown1'>{{currentLang}}</a>
-        <ul id='dropdown1' class='dropdown-content'>
-          <li (click)="changeLocale('RU')">{{'LANG.RU' | translate}}</li>
-          <li (click)="changeLocale('EN')">{{'LANG.EN' | translate}}</li>
-        </ul></li>
-      <li *ngIf="!isAuthorized"><a [routerLink]="['/login']">{{'INFO.LOGIN' | translate}}</a></li>
-      <li *ngIf="isAuthorized"><a href="api/logout">{{'INFO.LOGOUT' | translate}}</a></li>
-    </ul>
+<div class="app">
+  <nav class="">
+    <div class="nav-wrapper #d7ccc8 brown lighten-4">
+      <a class="brand-logo" [routerLink]="['/']"><img src="../assets/resources/img/logo.png"></a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a class='dropdown-button btn #bcaaa4 brown lighten-2' data-activates='dropdown1'>{{currentLang}}</a>
+          <ul id='dropdown1' class='dropdown-content'>
+            <li (click)="changeLocale('RU')">{{'LANG.RU' | translate}}</li>
+            <li (click)="changeLocale('EN')">{{'LANG.EN' | translate}}</li>
+          </ul>
+        </li>
+        <li *ngIf="!isAuthorized"><a [routerLink]="['/login']">{{'INFO.LOGIN' | translate}}</a></li>
+        <li *ngIf="isAuthorized"><a (click)="logout()">{{'INFO.LOGOUT' | translate}}</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container">
+    <div *ngIf="isAuthorized" class="fixed-action-btn horizontal click-to-toggle">
+      <a class="btn-floating btn-large #bcaaa4 brown lighten-3">
+        <i class="material-icons">menu</i>
+      </a>
+      <ul>
+        <li *ngIf="isAuthorized && !isAdmin"><a class="btn-floating #bcaaa4 brown lighten-2" [routerLink]="['/device/charts']">
+          <i class="material-icons">insert_chart</i></a>
+        </li>
+        <li *ngIf="isOwner"><a class="btn-floating #bcaaa4 brown lighten-2" [routerLink]="['/reg']"><i
+          class="material-icons">perm_identity</i></a></li>
+        <li *ngIf="isOwner"><a class="btn-floating #bcaaa4 brown lighten-2" [routerLink]="['/device/add']"><i
+          class="material-icons">add</i></a>
+        </li>
+        <li *ngIf="isOwner"><a class="btn-floating #bcaaa4 brown lighten-2" [routerLink]="['/device/manage']"><i class="material-icons">perm_data_setting</i></a>
+        </li>
+        <li *ngIf="isOwner"><a class="btn-floating #bcaaa4 brown lighten-2" [routerLink]="['/device/all']"><i class="material-icons">settings_power</i></a>
+        </li>
+        <li *ngIf="isAdmin"><a class="btn-floating #bcaaa4 brown lighten-2" [routerLink]="['/house/add']"><i
+          class="material-icons">add</i></a>
+        </li>
+        <li *ngIf="isAdmin"><a class="btn-floating #bcaaa4 brown lighten-2" [routerLink]="['/house/all']"><i
+          class="material-icons">home</i></a>
+        </li>
+      </ul>
+    </div>
+    <router-outlet></router-outlet>
   </div>
-</nav>
-<div class="container">
-  <div *ngIf="isAuthorized" class="fixed-action-btn horizontal click-to-toggle">
-    <a class="btn-floating btn-large blue">
-      <i class="material-icons">menu</i>
-    </a>
-    <ul>
-      <li *ngIf="isAuthorized && !isAdmin"><a class="btn-floating blue" [routerLink]="['/device/charts']">
-        <i class="material-icons">insert_chart</i></a>
-      </li>
-      <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/reg']"><i
-        class="material-icons">perm_identity</i></a></li>
-      <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/device/add']"><i class="material-icons">add</i></a>
-      </li>
-      <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/device/manage']"><i class="material-icons">perm_data_setting</i></a>
-      </li>
-      <li *ngIf="isOwner"><a class="btn-floating blue" [routerLink]="['/device/all']"><i class="material-icons">settings_power</i></a>
-      </li>
-      <li *ngIf="isAdmin"><a class="btn-floating blue" [routerLink]="['/house/add']"><i
-        class="material-icons">add</i></a>
-      </li>
-      <li *ngIf="isAdmin"><a class="btn-floating blue" [routerLink]="['/house/all']"><i class="material-icons">home</i></a>
-      </li>
-    </ul>
-  </div>
-  <router-outlet></router-outlet>
 </div>
-
 

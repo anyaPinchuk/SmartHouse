@@ -6,6 +6,9 @@ import {DeviceService} from './shared/device.service';
 import {isBoolean} from 'util';
 import {TranslateService} from 'ng2-translate';
 import {LocaleService} from './shared/locale.service';
+import {Router} from '@angular/router';
+
+declare const gapi;
 
 @Component({
   selector: 'app-root',
@@ -25,7 +28,8 @@ export class AppComponent implements OnInit {
               private user: User,
               private  deviceService: DeviceService,
               private translate: TranslateService,
-              private localeService: LocaleService) {
+              private localeService: LocaleService,
+              private router: Router) {
     this.localeService.getLang().subscribe((response) => {
       const lang = response.text().substr(1, 2);
       console.log(lang);
@@ -76,12 +80,21 @@ export class AppComponent implements OnInit {
   }
 
   changeLocale(lang: string) {
-    this.localeService.setLang(lang).subscribe(() => {
-      console.log('success');
-    });
+    this.localeService.setLang(lang).subscribe();
     this.translate.use(lang);
     this.translate.get('LANG.' + lang).subscribe(res => {
       this.currentLang = res;
+    });
+  }
+
+  logout() {
+    const auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out');
+    });
+
+    this.http.get('api/logout').subscribe(data => {
+      location.href = '/login';
     });
   }
 }

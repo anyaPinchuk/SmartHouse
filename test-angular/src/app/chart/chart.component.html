@@ -1,24 +1,27 @@
-<div class="row">
+<div class="row margin-top">
   <div class="col s2">
-    <label>{{'INFO.START_DATE' | translate}} </label><input type="date" class="datepicker" id="datepicker1" >
+    <label>{{'INFO.START_DATE' | translate}} </label><input type="date" class="datepicker" id="datepicker1">
   </div>
   <div class="col s2 offset-s1">
-    <label>{{'INFO.END_DATE' | translate}}</label><input type="date" class="datepicker" id="datepicker2" >
+    <label>{{'INFO.END_DATE' | translate}}</label><input type="date" class="datepicker" id="datepicker2">
   </div>
   <div class="col s2 offset-s1">
-  <select class="browser-default" (change)="changeUser($event.target.value)">
-    <option>{{'INFO.CHOOSE_USER' | translate}}</option>
-    <option *ngFor="let user of users"  [value]="user.email">{{user.name}}</option>
-  </select></div>
+    <select class="browser-default" (change)="changeUser($event.target.value)">
+      <option>{{'INFO.CHOOSE_USER' | translate}}</option>
+      <option *ngFor="let user of users" [value]="user.email">{{user.name}}</option>
+    </select></div>
   <div class="col s3 offset-s1">
-  <button class="btn blue " (click)="getReport($event)"><i class="material-icons">play_for_work</i>{{'INFO.DOWNLOAD' | translate}}</button></div>
+    <button class="btn #bcaaa4 brown lighten-2" (click)="getReport($event)"><i class="material-icons">play_for_work</i>
+      {{'INFO.DOWNLOAD' | translate}}
+    </button>
+  </div>
 </div>
 <div class="row">
   <div class="col s5">
-    <div style="width:100%" id="pie1"></div>
+    <div style="width:100%; height:300px" id="pie1"></div>
   </div>
   <div class="col s5 offset-s2">
-    <div style="width:100%" id="pie2"></div>
+    <div style="width:100%; height:300px" id="pie2"></div>
   </div>
 </div>
 <div class="row">
@@ -31,7 +34,7 @@
 </div>
 <div class="row">
   <div class="col s5">
-    <div style="width:100%" id="spline"></div>
+    <div style="width:100%; height:300px" id="spline"></div>
   </div>
 </div>
 

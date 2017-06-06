@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row margin-top">
   <form class="col s4 offset-s4" method="post" [formGroup]="deviceForm" action="api/device/add" #appForm="ngForm">
     <div class="row">
       <div class="input-field col s12">
@@ -18,9 +18,8 @@
         <label for="power">{{'DEVICE.POWER' | translate}}, W</label>
       </div>
     </div>
-    <p class="red-text center">{{errorMsg}}</p>
     <div class="center">
-      <button class="waves-effect waves-light btn blue" id="loginBtn" (click)="doAdd($event)">{{'DEVICE.ADD' | translate}}</button>
+      <button class="waves-effect waves-light btn #bcaaa4 brown lighten-2" id="loginBtn" (click)="doAdd($event)">{{'DEVICE.ADD' | translate}}</button>
     </div>
   </form>
 </div>

@@ -13,7 +13,6 @@ import {SharedService} from '../shared/shared.service';
 export class RegisterComponent implements OnInit {
 
   regForm: FormGroup;
-  errorMsg = '';
 
   ngOnInit() {
     this.ss.onMainEvent.emit(true);
@@ -34,25 +33,23 @@ export class RegisterComponent implements OnInit {
   doReg(event) {
     const form = this.regForm.getRawValue();
     if (form.role === '') {
-      this.errorMsg = 'Please, choose the user role';
+      notify('Please, choose the user role');
       return;
     } else if (form.email === '') {
-      this.errorMsg = 'Field email can not be empty';
+      notify('Field email can not be empty');
       return;
     } else if (form.name === '') {
-      this.errorMsg = 'Field name can not be empty';
+      notify('Field name can not be empty');
       return;
     } else if (form.password === '') {
-      this.errorMsg = 'Field password can not be empty';
+      notify('Field password can not be empty');
       return;
-    } else {
-      this.errorMsg = '';
     }
     this.http.post('/api/user/reg', form)
       .subscribe(
         (data) => {
           if (data.text() === 'user exists') {
-            this.errorMsg = 'User with this login already exists';
+            notify('User with this login already exists');
           } else {
             this.router.navigateByUrl('/device/all');
           }
@@ -60,4 +57,7 @@ export class RegisterComponent implements OnInit {
         error => console.error('could not post because', error),
       );
   }
+}
+function notify(msg) {
+  Materialize.toast(msg, 4000);
 }

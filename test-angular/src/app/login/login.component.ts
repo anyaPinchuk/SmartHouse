@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators, FormControl} from '@angular/forms';
 import {Http} from '@angular/http';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {SharedService} from '../shared/shared.service';
+declare const gapi;
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit {
   constructor(public fb: FormBuilder,
               private route: ActivatedRoute,
               private http: Http,
-              private ss: SharedService) {
+              private ss: SharedService,
+              private zone: NgZone) {
     this.loginForm = this.fb.group({
       email: ['', Validators.required],
       password: ['', Validators.required],
@@ -35,6 +37,9 @@ export class LoginComponent implements OnInit {
           (<FormControl>this.loginForm.controls['email']).setValue(email);
         }
       });
+    this.zone.run(() => {
+      window['onSignIn'] = (user) => zone.run(() => this.onSignIn(user));
+    });
   }
 
   doLogin(event) {
@@ -51,6 +56,20 @@ export class LoginComponent implements OnInit {
     }
     this.http.post('/api/user/login', this.loginForm)
       .subscribe(
+        error => console.error('could not post because', error));
+  }
+
+  onSignIn(googleUser) {
+    const id_token = googleUser.getAuthResponse().id_token;
+    this.http.post('api/auth/get', id_token)
+      .subscribe(
+        data => {
+          if (data.text() === 'ROLE_ADMIN') {
+            location.href = '/house/all';
+          } else {
+            location.href = '/device/all';
+          }
+        },
         error => console.error('could not post because', error));
   }
 

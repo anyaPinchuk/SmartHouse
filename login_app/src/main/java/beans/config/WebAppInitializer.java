@@ -4,12 +4,13 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 
 import javax.servlet.ServletRegistration;
 
-public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer{
+public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return new Class<?>[]{
-               RootConfig.class,
-                PersistenceConfiguration.class
+                RootConfig.class,
+                PersistenceConfiguration.class,
+                MemCacheConfiguration.class
         };
     }
 

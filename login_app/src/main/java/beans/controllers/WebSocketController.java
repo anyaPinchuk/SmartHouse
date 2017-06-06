@@ -53,7 +53,7 @@ public class WebSocketController {
     public void notifyOwner(DeviceDTO deviceDTO, SimpMessageHeaderAccessor headerAccessor) {
         User user = (User) ((UsernamePasswordAuthenticationToken) headerAccessor.getUser()).getPrincipal();
         User owner = userRepository.findBySmartHouseAndRole(user.getSmartHouse(), "ROLE_OWNER");
-        deviceDTO.setEmail(user.getLogin());
+        deviceDTO.setEmail(user.getName());
         messagingTemplate.convertAndSendToUser(owner.getSessionID(), "/queue/getNotify", deviceDTO);
     }
 }

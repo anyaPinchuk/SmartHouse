@@ -9,6 +9,7 @@ export class ChartService {
         plotBackgroundColor: null,
         plotBorderWidth: null,
         plotShadow: false,
+        backgroundColor: '#efe4da',
         type: 'pie'
       },
       exporting: {
@@ -49,6 +50,7 @@ export class ChartService {
         plotBackgroundColor: null,
         plotBorderWidth: null,
         plotShadow: false,
+        backgroundColor: '#efe4da',
         type: 'pie'
       },
       exporting: {
@@ -85,7 +87,8 @@ export class ChartService {
   static renderBarChartHours() {
     return Highcharts.chart('pie3', {
       chart: {
-        type: 'column'
+        type: 'column',
+        backgroundColor: '#efe4da'
       },
       exporting: {
         enabled: false
@@ -139,7 +142,8 @@ export class ChartService {
   static renderBarChartEnergy() {
     return Highcharts.chart('pie4', {
       chart: {
-        type: 'column'
+        type: 'column',
+        backgroundColor: '#efe4da',
       },
       title: {
         text: 'Device chart by consumed energy'
@@ -193,11 +197,15 @@ export class ChartService {
   static renderSplineChart() {
      return Highcharts.chart('spline', {
       chart: {
+        backgroundColor: '#efe4da',
         type: 'spline'
       },
       title: {
         text: 'Total consumption of energy'
       },
+       exporting: {
+         enabled: false
+       },
       xAxis: {
       },
       yAxis: {

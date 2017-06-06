@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row margin-top">
   <form class="col s4 offset-s4" method="post" [formGroup]="loginForm" action="api/user/login"
         (ngSubmit)="doLogin($event)"
         #appForm="ngForm">
@@ -18,8 +18,9 @@
       </div>
     </div>
     <p class="red-text center">{{errorMsg}}</p>
-    <div class="col s4 offset-s4">
-      <button class="waves-effect waves-light btn blue" id="loginBtn" type="submit">{{'INFO.LOGIN' | translate}}</button>
+    <div class="col s4 offset-s2">
+      <button class="waves-effect waves-light btn #d7ccc8 brown lighten-4" id="loginBtn" type="submit">{{'INFO.LOGIN' | translate}}</button>
     </div>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
   </form>
 </div>

@@ -14,6 +14,9 @@ import {isBoolean} from 'util';
 export class DeviceComponent implements OnInit {
 
   devices: Device[] = [];
+  pages: number[] = [];
+  currentPage = 1;
+  searchParam = '';
 
   constructor(private deviceService: DeviceService,
               private ss: SharedService,
@@ -26,15 +29,50 @@ export class DeviceComponent implements OnInit {
         this.devices = item;
       }
     });
-    this.deviceService.getDevices().subscribe(
-      (data) => {
-        this.devices = data.json();
-        this.ss.onMainEvent.emit(true);
-      },
-      (error) => {
-        this.router.navigateByUrl('/login');
+    this.ss.onMainEvent.emit(true);
+    this.deviceService.getPagesCount().subscribe(
+      (resp) => {
+        const countOfElems = resp.text();
+        let countOfPages = 0;
+        if (countOfElems % 5 === 0) {
+          countOfPages = countOfElems / 5;
+        } else {
+          countOfPages = countOfElems / 5 + 1;
+        }
+        for (let i = 1; i <= countOfPages; i++) {
+          this.pages.push(i);
+        }
       }
     );
+    this.deviceService.getDevices(1).subscribe(
+      (data) => {
+        this.devices = data.json();
+      }
+    );
+  }
+
+  choosePage(page, event) {
+    if (page < 1 || page > this.pages.length) {
+      return;
+    }
+    this.currentPage = page;
+    if (this.searchParam !== '') {
+      this.deviceService.find(this.searchParam, this.currentPage).subscribe(
+        (data) => {
+          this.devices = data.json();
+        }
+      );
+    } else {
+      this.deviceService.getDevices(this.currentPage).subscribe(
+        (data) => {
+          this.devices = data.json();
+        },
+        (error) => {
+          this.router.navigateByUrl('/login');
+        }
+      );
+    }
+
   }
 
   turnAction(event, device, stateInput) {
@@ -49,7 +87,22 @@ export class DeviceComponent implements OnInit {
   }
 
   onChange(searchParam) {
-    this.deviceService.find(searchParam).subscribe(
+    this.deviceService.getPagesCountWithSearch(searchParam).subscribe(
+      (resp) => {
+        const countOfElems = resp.text();
+        let countOfPages = 0;
+        if (countOfElems % 5 === 0) {
+          countOfPages = countOfElems / 5;
+        } else {
+          countOfPages = countOfElems / 5 + 1;
+        }
+        this.pages = [];
+        for (let i = 1; i <= countOfPages; i++) {
+          this.pages.push(i);
+        }
+      }
+    );
+    this.deviceService.find(searchParam, this.currentPage).subscribe(
       (data) => {
         this.devices = data.json();
       }

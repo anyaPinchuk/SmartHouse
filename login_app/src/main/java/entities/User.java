@@ -1,10 +1,11 @@
 package entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 
 @Entity
-public class User {
+public class User implements Serializable {
     private Long id;
     private String login;
     private String name;
@@ -13,6 +14,7 @@ public class User {
     private String role;
     private House smartHouse;
     private String sessionID;
+    private String token;
 
     public User() {
 
@@ -106,5 +108,14 @@ public class User {
 
     public String getSessionID() {
         return sessionID;
+    }
+
+    @Column(name = "token", unique = true)
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

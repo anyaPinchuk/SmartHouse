@@ -1,0 +1,14 @@
+nav {
+  opacity: 0.9;
+  height: 90px;
+}
+
+.brand-logo {
+  margin-left: 50px;
+  padding-top: 10px;
+}
+
+#nav-mobile{
+  margin-right: 50px;
+  margin-top: 10px;
+}

@@ -11,7 +11,6 @@ import {Http} from '@angular/http';
 })
 export class NewAccountComponent implements OnInit {
   userForm: FormGroup;
-  errorMsg = '';
 
   constructor(private route: ActivatedRoute,
               public fb: FormBuilder,
@@ -25,7 +24,7 @@ export class NewAccountComponent implements OnInit {
     this.route.queryParams
       .subscribe((queryParams: Observable<Params>) => {
         const email = queryParams['email'];
-        this.errorMsg = queryParams['error'];
+        notify(queryParams['error']);
         if (email) {
           (<FormControl>this.userForm.controls['email']).setValue(email);
         }
@@ -42,14 +41,18 @@ export class NewAccountComponent implements OnInit {
         .subscribe(
           (data) => {
             if (data.json().email === '') {
-              this.errorMsg = 'User with this login already exists';
+              notify('User with this login already exists');
             } else {
               this.router.navigateByUrl('/login?email=' + data.json().email);
             }
           },
           error => console.error('could not post because', error));
     } else {
-      this.errorMsg = 'Password fields can be equal!';
+     notify('Password fields can be equal!');
     }
   }
 }
+function notify(msg) {
+  Materialize.toast(msg, 4000);
+}
+

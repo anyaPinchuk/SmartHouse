@@ -1,6 +1,6 @@
 .border-bottom{
-  border-bottom-color: #1aa7ff !important;
-  box-shadow: 0 1px 0 0 #1aa7ff !important;
+  border-bottom-color: #6d5451 !important;
+  box-shadow: 0 1px 0 0 #6d5451 !important;
 }
 
 .form-width{
@@ -9,6 +9,10 @@
 
 .margin_bottom{
   margin-bottom: 5%;
+}
+
+.margin-top{
+margin-top: 150px;
 }
 
 .margin_left{
@@ -30,3 +34,12 @@
   margin-right: 30px;
 }
 
+button{
+  opacity: 0.94;
+}
+
+body{
+  background: url("./assets/resources/img/home.jpg") no-repeat;
+  height: 100%;
+  font-family: ‘Lucida Sans Unicode’, ‘Lucida Grande’, sans-serif;
+}

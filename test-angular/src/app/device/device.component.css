@@ -1,0 +1,15 @@
+.collection-item {
+  background-color: #efe4da;
+}
+
+li.active {
+  background-color: #d7ccc8;
+}
+
+li :hover {
+  cursor: pointer;
+}
+.pagination li  a{
+  color: white;
+}
+

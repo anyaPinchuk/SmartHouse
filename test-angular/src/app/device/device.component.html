@@ -1,14 +1,14 @@
 <div class="row">
   <div class="input-field col s6 offset-s3">
     <i class="material-icons prefix">search</i>
-    <input id="icon_prefix" type="text" class="validate" (change)="onChange($event.target.value)">
+    <input id="icon_prefix" type="text" class="validate" [(ngModel)]="searchParam" (change)="onChange($event.target.value)">
     <label for="icon_prefix">{{'INFO.SEARCH' | translate}}...</label>
   </div>
 </div>
 
 <div class="row">
   <div class="collection col s10 offset-s1">
-    <a *ngFor="let device of devices" class="collection-item blue-text">
+    <a *ngFor="let device of devices" class="collection-item brown-text">
       <div class="row">
         <div class="col s6 offset-s1">
           <h3>{{device?.name}}</h3>
@@ -31,5 +31,18 @@
         </div>
       </div>
     </a>
+  </div>
+</div>
+<div class="row">
+  <div class="col s6 offset-s5">
+    <ul class="pagination">
+      <li><a (click)="choosePage(currentPage-1, $event)">
+        <i class="material-icons #d7ccc8 brown lighten-4">chevron_left</i></a>
+      </li>
+      <li [ngClass]="{'active': currentPage === page}" *ngFor="let page of pages"><a (click)="choosePage(page, $event)">{{page}}</a></li>
+      <li><a (click)="choosePage(currentPage+1, $event)">
+        <i class="material-icons #d7ccc8 brown lighten-4">chevron_right</i></a>
+      </li>
+    </ul>
   </div>
 </div>

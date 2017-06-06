@@ -19,8 +19,12 @@ export class DeviceService {
               private ss: SharedService) {
   }
 
-  getDevices(): any {
-    return this.http.get('api/device/all');
+  getPagesCount(): any {
+    return this.http.get('api/device/getPagesCount');
+  }
+
+  getDevices(start): any {
+    return this.http.get('api/device/all?startPage=' + start);
   }
 
   updateDevice(device: Device): any {
@@ -88,8 +92,12 @@ export class DeviceService {
     return this.http.post('/api/upload/image', form);
   }
 
-  find(param: string) {
-    return this.http.get('/api/device/find?param=' + param);
+  find(param: string, start) {
+    return this.http.get('/api/device/find?searchParam=' + param + '&startPage=' + start);
+  }
+
+  getPagesCountWithSearch(searchParam: any): any {
+    return this.http.get('/api/device/getPagesCountWithSearch?searchParam=' + searchParam);
   }
 }
 

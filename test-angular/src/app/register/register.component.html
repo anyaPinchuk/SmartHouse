@@ -1,19 +1,19 @@
-<div class="row">
+<div class="row margin-top">
   <form class="col s4 offset-s4" method="post" [formGroup]="regForm" (ngSubmit)="doReg($event)" action="api/user/reg"
         #appForm="ngForm">
 
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="email"  type="email"name="email" id="email"
+        <input formControlName="email" type="email" name="email" id="email"
                class="validate border-bottom" min="4" max="30" required>
         <label data-error="wrong" data-success="right" for="email">Email</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="name"  type="text" name="name" id="name"
+        <input formControlName="name" type="text" name="name" id="name"
                class="validate border-bottom" min="4" max="30" required>
-        <label data-error="wrong" data-success="right" for="email">Name</label>
+        <label data-error="wrong" data-success="right" for="email">{{'USER.NAME' | translate}}</label>
       </div>
     </div>
     <div class="row">
@@ -23,7 +23,6 @@
         <label for="password">{{'USER.PASSWORD' | translate}}</label>
       </div>
     </div>
-    <p class="red-text center">{{errorMsg}}</p>
     <div class="row">
       <div class="input-field col s4">
         <input formControlName="role" value="ROLE_ADULT" type="radio" id="role" name="role" class="blue" checked>
@@ -37,9 +36,12 @@
         <input formControlName="role" value="ROLE_GUEST" type="radio" name="role" id="role2">
         <label for="role2">Guest</label>
       </div>
-    </div><br>
+    </div>
+    <br>
     <div class="row">
-      <button class="waves-effect waves-light btn blue col s5 offset-s3" id="regBtn" type="submit">{{'INFO.SIGNUP' | translate}}</button>
+      <button class="waves-effect waves-light btn #bcaaa4 brown lighten-2 col s5 offset-s3" id="regBtn" type="submit">
+        {{'INFO.SIGNUP' | translate}}
+      </button>
     </div>
   </form>
 </div>
