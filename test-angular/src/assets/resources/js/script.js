@@ -1,7 +1,7 @@
 $(document).ready(function () {
   $('.slider').slider();
   $('select').material_select();
-
+  start();
 });
 
 function start() {

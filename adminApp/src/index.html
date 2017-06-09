@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-signin-client_id"
+        content="459855976439-t8f5fq12f8uskrpl0h8tn34d89aapftq.apps.googleusercontent.com">
+  <title>Smart home</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+<body style=" background: url('assets/img/home.jpg') no-repeat !important;">
+<div id="app"></div>
+<script>__REACT_DEVTOOLS_GLOBAL_HOOK__ = parent.__REACT_DEVTOOLS_GLOBAL_HOOK__</script>
+<script type="text/javascript" src="assets/app.js"></script>
+<script src="https://apis.google.com/js/platform.js?onload=start"></script>
+<script>
+  function start() {
+    gapi.load('auth2', function () {
+      auth2 = gapi.auth2.init({
+        client_id: '459855976439-t8f5fq12f8uskrpl0h8tn34d89aapftq.apps.googleusercontent.com',
+      });
+      gapi.signin2.render('g-signin2', {
+        'scope': 'https://www.googleapis.com/auth/plus.login',
+        'width': 200,
+        'height': 50,
+        'longtitle': true,
+        'onsuccess': onSignIn
+      });
+    });
+  }
+  function onSignIn(googleUser) {
+    const id_token = googleUser.getAuthResponse().id_token;
+    console.log(id_token);
+  }
+</script>
+</body>
+</html>

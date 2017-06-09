@@ -1,0 +1,45 @@
+.border-bottom {
+  border-bottom-color: #6d5451 !important;
+  box-shadow: 0 1px 0 0 #6d5451 !important;
+}
+
+.margin_bottom {
+  margin-bottom: 5%;
+}
+
+.margin-top {
+  margin-top: 150px;
+}
+
+.row .col {
+  padding: 0 !important;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  opacity: 0.94;
+}
+
+body {
+  height: 100%;
+  font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+}
+
+nav {
+  opacity: 0.9;
+  height: 90px !important;
+}
+
+.brand-logo {
+  margin-left: 50px;
+  padding-top: 10px;
+}
+
+#nav-mobile {
+  margin-right: 50px;
+  margin-top: 10px;
+}
