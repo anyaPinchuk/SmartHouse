@@ -43,3 +43,15 @@ nav {
   margin-right: 50px;
   margin-top: 10px;
 }
+
+label {
+  color: white;
+}
+
+.collection-item {
+  background-color: #efe4da;
+}
+
+li.active {
+  background-color: #d7ccc8;
+}

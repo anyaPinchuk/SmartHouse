@@ -1,5 +1,4 @@
 import {Component, NgZone, OnInit} from '@angular/core';
-import {FormGroup, FormBuilder, Validators, FormControl} from '@angular/forms';
 import {Http} from '@angular/http';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {SharedService} from '../shared/shared.service';
@@ -11,30 +10,26 @@ declare const gapi;
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
-  errorMsg = '';
+  public data;
 
   ngOnInit() {
     this.ss.onMainEvent.emit(true);
   }
 
-  constructor(public fb: FormBuilder,
-              private route: ActivatedRoute,
+  constructor(private route: ActivatedRoute,
+              private router: Router,
               private http: Http,
               private ss: SharedService,
               private zone: NgZone) {
-    this.loginForm = this.fb.group({
-      email: ['', Validators.required],
-      password: ['', Validators.required],
-    });
+    this.data = {
+      email: '',
+      password: ''
+    };
     this.route.queryParams
       .subscribe((queryParams: Params) => {
-        if (queryParams['error'] === 'wrong_credentials') {
-          this.errorMsg = 'User with such login and password does not exist';
-        }
         const email = queryParams['email'];
         if (email) {
-          (<FormControl>this.loginForm.controls['email']).setValue(email);
+          this.data.email = email;
         }
       });
     this.zone.run(() => {
@@ -42,21 +37,29 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  doLogin(event) {
-    const form = this.loginForm.getRawValue();
+  doLogin() {
     this.ss.onMainEvent.emit(true);
-    if (form.email === '') {
-      this.errorMsg = 'field email can not be empty';
+    if (this.data.email === '') {
+      notify('Field email can not be empty');
       return;
-    } else if (form.password === '') {
-      this.errorMsg = 'field password can not be empty';
+    } else if (this.data.password === '') {
+      notify('Field password can not be empty');
       return;
-    } else {
-      this.errorMsg = '';
     }
-    this.http.post('/api/user/login', this.loginForm)
-      .subscribe(
-        error => console.error('could not post because', error));
+    $.ajax({
+      type: 'POST',
+      url: '/api/user/login',
+      data: this.data
+    }).then((data, textStatus, jqXHR) => {
+      if (jqXHR.getResponseHeader('errortext')) {
+        notify('User with such login and password does not exist');
+      } else {
+        this.router.navigateByUrl('/device/all');
+      }
+    }, () => {
+      notify('Something goes wrong');
+    });
+    return false;
   }
 
   onSignIn(googleUser) {
@@ -65,12 +68,15 @@ export class LoginComponent implements OnInit {
       .subscribe(
         data => {
           if (data.text() === 'ROLE_ADMIN') {
-            location.href = '/house/all';
+            this.router.navigateByUrl('/house');
           } else {
-            location.href = '/device/all';
+            this.router.navigateByUrl('/device/all');
           }
         },
-        error => console.error('could not post because', error));
+        error => notify('Something goes wrong'));
   }
 
+}
+function notify(message) {
+  Materialize.toast(message, 4000);
 }

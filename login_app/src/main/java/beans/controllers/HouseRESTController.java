@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/api/house")
 public class HouseRESTController {
@@ -24,8 +26,9 @@ public class HouseRESTController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SuppressWarnings("unchecked")
-    public ResponseEntity<?> add(@RequestBody HouseDTO houseDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> add(@RequestBody HouseDTO houseDTO, BindingResult bindingResult, HttpServletResponse response) {
         LOG.info("handle post request by url /api/house/add");
+        response.setHeader("Access-Control-Allow-Origin", "*");
         if (!bindingResult.hasErrors()) {
             return ResponseEntity.ok(houseService.addHouse(houseDTO));
         } else {
@@ -37,7 +40,8 @@ public class HouseRESTController {
     @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SuppressWarnings("unchecked")
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<?> getAll(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
         LOG.info("handle post request by url /api/house/all");
         return ResponseEntity.ok(houseService.getAll());
     }

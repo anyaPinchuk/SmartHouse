@@ -44,7 +44,7 @@ export const routes: Routes = [
     component: DeviceAddComponent
   },
   {
-    path: 'house/all',
+    path: 'house',
     component: HouseComponent
   },
   {

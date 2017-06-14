@@ -12,5 +12,5 @@ new WebpackDevServer(webpack(config), config.devServer)
     }
     console.log('Listening at localhost:' + config.devServer.port);
     console.log('Opening your system browser...');
-    open('http://localhost:' + config.devServer.port);
+    open('http://localhost:' + config.devServer.port+'/login');
   });

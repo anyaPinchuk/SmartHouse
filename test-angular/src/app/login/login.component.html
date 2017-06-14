@@ -1,22 +1,20 @@
 <div class="row margin-top">
-  <form class="col s4 offset-s4" method="post" [formGroup]="loginForm" action="api/user/login"
-        (ngSubmit)="doLogin($event)" #appForm="ngForm">
+  <form class="col s4 offset-s4" (ngSubmit)="doLogin()" #appForm="ngForm">
 
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="email" type="email"
+        <input [(ngModel)]="data.email" type="email"
                name="email" id="email" class="validate border-bottom" required min="4" max="30">
         <label data-error="wrong" data-success="right" for="email">Email</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input formControlName="password" type="password" min="4" max="30" name="password" id="password"
+        <input [(ngModel)]="data.password" type="password" min="4" max="30" name="password" id="password"
                class="validate border-bottom" required>
         <label for="password">{{'USER.PASSWORD' | translate}}</label>
       </div>
     </div>
-    <p class="red-text center">{{errorMsg}}</p>
     <div class="col s4 offset-s2">
       <button class="waves-effect waves-light btn #d7ccc8 brown lighten-4" id="loginBtn" type="submit">{{'INFO.LOGIN' | translate}}</button>
     </div>

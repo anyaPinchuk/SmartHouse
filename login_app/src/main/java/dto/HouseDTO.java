@@ -26,6 +26,9 @@ public class HouseDTO {
     @NotNull
     private String ownerLogin;
 
+    public HouseDTO() {
+    }
+
     public HouseDTO(String country, String city, String street, String house, String flat, String email) {
         this.country = country;
         this.city = city;

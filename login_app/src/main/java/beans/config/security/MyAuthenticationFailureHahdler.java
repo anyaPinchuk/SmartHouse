@@ -16,10 +16,9 @@ import java.io.IOException;
 @Component
 public class MyAuthenticationFailureHahdler implements AuthenticationFailureHandler {
 
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     @Override
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/login?error=wrong_credentials");
+        httpServletResponse.setHeader("errortext", "wrong_credentials");
         clearAuthenticationAttributes(httpServletRequest);
     }
 

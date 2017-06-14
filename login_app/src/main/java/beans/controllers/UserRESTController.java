@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 
@@ -75,11 +76,12 @@ public class UserRESTController {
 
     @GetMapping("/checkRights")
     @SuppressWarnings("unchecked")
-    public ResponseEntity<?> get() {
+    public ResponseEntity<?> get(HttpServletResponse response) {
         LOG.info("handle post request by url /api/user/checkRights");
         UserDTO userDTO;
         User user;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        response.setHeader("Access-Control-Allow-Origin", "*");
         if (!"anonymousUser".equals(auth.getPrincipal())) {
             user = (User) auth.getPrincipal();
             userDTO = userConverter.toDTO(user).orElseThrow(() -> new ServiceException("user wasn't converted"));
@@ -101,7 +103,7 @@ public class UserRESTController {
         if (!"".equals(email)) {
             userService.sendConfirmation(email);
         }
-        return new RedirectView("/house/all");
+        return new RedirectView("/house");
     }
 
     @PostMapping("/new")
