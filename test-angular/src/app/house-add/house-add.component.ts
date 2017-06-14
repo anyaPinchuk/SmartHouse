@@ -34,7 +34,7 @@ export class HouseAddComponent implements OnInit {
       this.http.post('/api/house/add', form)
         .subscribe(
           (data) => {
-            this.router.navigateByUrl('/house/all');
+            this.router.navigateByUrl('/house');
           },
           (error) => {
             console.error('could not post because', error);

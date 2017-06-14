@@ -12,6 +12,9 @@ public class ImageDTO implements Serializable{
     private String splineChart;
     private String userName;
 
+    public ImageDTO() {
+    }
+
     public String getStartDate() {
         return startDate;
     }

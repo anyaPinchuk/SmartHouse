@@ -1,82 +1,72 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import Link from 'react-router-dom/es/Link';
-import Main from './main'
+import {connect} from 'react-redux';
+import {checkRights, logout} from '../../actions/UserAction';
 
 class PageContent extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = this.getCurrentState();
-  }
-
-  getCurrentState() {
-    let items = [];
-    items.push({
-      id: 1,
-      caption: 'Webpack',
-      usage: 'Использовался в качестве сборщика модулей',
-      readMoreLink: 'https://blog.risingstack.com/using-react-with-webpack-tutorial/'
-    });
-    items.push({
-      id: 2,
-      caption: 'Twitter Bootstrap',
-      usage: 'Использовался для оформления примера',
-      readMoreLink: 'http://getbootstrap.com/css/'
-    });
-    items.push({
-      id: 3,
-      caption: 'ESLint',
-      usage: 'Использовался для статического анализа кода',
-      readMoreLink: 'http://eslint.org/docs/about/'
-    });
-    items.push({
-      id: 4,
-      caption: 'JSX',
-      usage: 'Использовался для генерации разметки',
-      readMoreLink: 'https://facebook.github.io/react/docs/jsx-in-depth.html'
-    });
-    items.push({
-      id: 5,
-      caption: 'Babel',
-      usage: 'Использовался для компиляции EcmaScript5 компилируется в JavaScript',
-      readMoreLink: 'https://babeljs.io/docs/learn-es2015/'
-    });
-    return {
-      technologies: items
-    }
+  logout(e) {
+    e.preventDefault();
+    this.props.logout();
   }
 
   render() {
+    const {isAuthenticated} = this.props.auth;
+    const logout = (
+      <li><a onClick={this.logout.bind(this)}>Log out</a></li>
+    );
+    const login = (
+      <li><Link to='/login'>Log in</Link></li>
+    );
+    const adminLinks = (
+      <div className="fixed-action-btn horizontal click-to-toggle">
+        <a className="btn-floating btn-large #bcaaa4 brown lighten-3">
+          <i className="material-icons">menu</i>
+        </a>
+        <ul>
+          <li><Link to='/add'>
+            <button className="btn-floating #bcaaa4 brown lighten-2">
+              <i className="material-icons">add</i></button>
+          </Link>
+          </li>
+          <li><Link to='/house'><a className="btn-floating #bcaaa4 brown lighten-2">
+            <i className="material-icons">home</i></a></Link>
+          </li>
+        </ul>
+      </div>
+    );
+
     return (
       <div>
         <nav>
           <div className="nav-wrapper #d7ccc8 brown lighten-4">
-            <a className="brand-logo"><img src="../assets/img/logo.png"/></a>
+            <a className="brand-logo"><Link to='/'><img src="../assets/img/logo.png"/></Link></a>
             <ul id="nav-mobile" className="right hide-on-med-and-down">
-              <li><Link to='/login'>Log in</Link></li>
-              <li><a >Log out</a></li>
+              { isAuthenticated ? logout : login}
             </ul>
           </div>
         </nav>
         <div className="container">
-          <Main />
-          <div className="fixed-action-btn horizontal click-to-toggle">
-            <a className="btn-floating btn-large #bcaaa4 brown lighten-3">
-              <i className="material-icons">menu</i>
-            </a>
-            <ul>
-              <li ><a className="btn-floating #bcaaa4 brown lighten-2"><i
-                className="material-icons">add</i></a>
-              </li>
-              <li ><a className="btn-floating #bcaaa4 brown lighten-2"><i
-                className="material-icons">home</i></a>
-              </li>
-            </ul>
-          </div>
+          {this.props.children}
+          { isAuthenticated ? adminLinks : ''}
         </div>
       </div>
     );
   }
+
+  componentDidMount() {
+    this.props.checkRights();
+  }
+}
+PageContent.propTypes = {
+  auth: PropTypes.object.isRequired,
+  logout: React.PropTypes.func.isRequired,
+  checkRights: React.PropTypes.func.isRequired
+};
+
+function mapStateToProps(state) {
+  return {
+    auth: state.auth
+  }
 }
 
-export default PageContent;
+export default connect(mapStateToProps, {logout, checkRights})(PageContent);
